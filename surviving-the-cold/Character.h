@@ -20,7 +20,7 @@ class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
-    int velocity = 1;
+    int velocity = 6;
     LockMovement lockMove = LockMovement::NONE;
 
     public:
