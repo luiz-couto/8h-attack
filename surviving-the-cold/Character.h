@@ -12,6 +12,7 @@ class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
+    int velocity = 1;
 
     public:
     Character(GamesEngineeringBase::Window *canvas) {
@@ -37,9 +38,28 @@ class Character {
         this->position.y = y;
     }
 
+    void setVelocity(int newVelocity) {
+        this->velocity = newVelocity;
+    }
+
     void move(int xIncrement, int yIncrement) {
         this->position.x = this->position.x + xIncrement;
         this->position.y = this->position.y + yIncrement;
+    }
+
+    void reactToMovementKeys() {
+        if (this->canvas->keyPressed('W')) {
+            this->move(0, -(this->velocity));
+        }
+        if (this->canvas->keyPressed('A')) {
+            this->move(-(this->velocity), 0);
+        }
+        if (this->canvas->keyPressed('D')) {
+            this->move(this->velocity, 0);
+        }
+        if (this->canvas->keyPressed('S')) {
+            this->move(0, this->velocity);
+        }
     }
     
     void draw() {
