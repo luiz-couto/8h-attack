@@ -45,7 +45,7 @@ int main() {
         // Draw();
         renderBackground(canvas);
 
-        gameImage.drawImage("assets/tiles/0.png", 0, 0);
+        terrain.drawTerrain(0, 0);
         character.draw();
 
         // Display the frame on the screen. This must be called once the frame

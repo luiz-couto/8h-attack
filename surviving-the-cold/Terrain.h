@@ -3,39 +3,66 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
 #include "Debug.h"
+
+#define TILE_SIZE 32
+#define NUMBER_OF_TILES 10
 
 enum TileKind {
     FULL_GRASS,
 };
 
+std::string getTileFile(int tileKind) {
+    return "assets/tiles/" + std::to_string(tileKind) + ".png";
+}
+
 // Terrain file = *.terrain
 // First line is relative to the size MxN
 // The others indicate which tiles to use
+// The tiles data is stored to avoid loading them again all the time
 class Terrain {
     private:
     GamesEngineeringBase::Window* canvas;
     int width, height;
     int** terrain;
+    GamesEngineeringBase::Image* tilesData[NUMBER_OF_TILES];
+    GameImage* gameImage;
 
     public:
     Terrain(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
+        this->terrain = nullptr;
+        this->gameImage = new GameImage(canvas);
+        for (int i=0; i<NUMBER_OF_TILES; i++) {
+            this->tilesData[i] = new GamesEngineeringBase::Image();
+        }
     }
 
     void allocateTerrainMemory() {
-        Debug::print(1);
+        freeTerrainMemory();
         this->terrain = new int*[this->height];
         for (int i = 0; i < this->height; ++i)
             this->terrain[i] = new int[this->width];
     }
 
     void freeTerrainMemory() {
-        for (int i = 0; i < this->height; ++i)
-            delete [] terrain[i];
-        delete [] terrain;
+        if (terrain != NULL) {
+            for (int i = 0; i < this->height; ++i)
+                delete [] terrain[i];
+            delete [] terrain;
+        }
+    }
+
+    GamesEngineeringBase::Image* getTileImage(int tileKind) {
+        GamesEngineeringBase::Image* tileImage = this->tilesData[tileKind];
+        if (tileImage->data == NULL) {
+            std::string tileFilename = getTileFile(tileKind);
+            tileImage->load(tileFilename);
+        }
+        return tileImage;
     }
 
     void loadTerrain(std::string terrainFile) {
@@ -56,6 +83,17 @@ class Terrain {
                 stringStream >> this->terrain[j][i];
             }
         }
+    }
+
+    void drawTerrain(int startM, int startN) {
+        for (int i=startM; i<this->height; i++) {
+            for (int j=startN; j<this->width; j++) {
+                int tileKind = this->terrain[i][j];
+                GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
+                this->gameImage->drawImage(tileImage, i * TILE_SIZE, j * TILE_SIZE);
+            }
+        }
+
     }
 
     void printTerrainRaw() {

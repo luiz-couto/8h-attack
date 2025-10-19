@@ -13,18 +13,14 @@ class GameImage {
         this->canvas = canvas;
     }
 
-    void drawImage(std::string fileName, int positionX, int positionY) {
-        GamesEngineeringBase::Image image = GamesEngineeringBase::Image();
-        image.load(fileName);
-
-        for (int i=positionX; i < positionX + image.width; i++) {
-            for (int j=positionY; j < positionY + image.height; j++) {
-                char r = image.at(i, j, 0);
-                char g = image.at(i, j, 1);
-                char b = image.at(i, j, 2);
+    void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY) {
+        for (int i=positionX; i < positionX + image->width; i++) {
+            for (int j=positionY; j < positionY + image->height; j++) {
+                char r = image->at(i%image->width, j%image->height, 0);
+                char g = image->at(i%image->width, j%image->height, 1);
+                char b = image->at(i%image->width, j%image->height, 2);
                 canvas->draw(i, j, r, g, b);
             }
         }
     }
-
 };
