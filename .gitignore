@@ -43,3 +43,4 @@
 # Visual Studio files
 **/.vs/**
 **/Debug/**
+.vscode

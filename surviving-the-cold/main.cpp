@@ -2,6 +2,7 @@
 #include "GamesEngineeringBase.h"
 #include "Character.h"
 #include "GameImage.h"
+#include "Terrain.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -27,7 +28,10 @@ int main() {
 
     Character character = Character(&canvas, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
     GameImage gameImage = GameImage(&canvas);
+    Terrain terrain = Terrain(&canvas);
 
+    terrain.loadTerrain("assets/terrains/1.terrain");
+    terrain.printTerrainRaw();
 
     while (running)
     {
