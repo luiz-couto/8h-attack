@@ -8,11 +8,20 @@ struct Position {
     int x,y;
 };
 
+enum LockMovement {
+    NONE,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
 class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
     int velocity = 1;
+    LockMovement lockMove = LockMovement::NONE;
 
     public:
     Character(GamesEngineeringBase::Window *canvas) {
@@ -48,16 +57,16 @@ class Character {
     }
 
     void reactToMovementKeys() {
-        if (this->canvas->keyPressed('W')) {
+        if (this->canvas->keyPressed('W') && this->lockMove != LockMovement::UP) {
             this->move(0, -(this->velocity));
         }
-        if (this->canvas->keyPressed('A')) {
+        if (this->canvas->keyPressed('A') && this->lockMove != LockMovement::LEFT) {
             this->move(-(this->velocity), 0);
         }
-        if (this->canvas->keyPressed('D')) {
+        if (this->canvas->keyPressed('D') && this->lockMove != LockMovement::RIGHT) {
             this->move(this->velocity, 0);
         }
-        if (this->canvas->keyPressed('S')) {
+        if (this->canvas->keyPressed('S') && this->lockMove != LockMovement::DOWN) {
             this->move(0, this->velocity);
         }
     }
