@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="Character.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="GameImage.h" />
     <ClInclude Include="GamesEngineeringBase.h" />
   </ItemGroup>
   <ItemGroup>

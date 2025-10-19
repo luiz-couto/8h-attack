@@ -1,6 +1,7 @@
 #include <iostream>
 #include "GamesEngineeringBase.h"
 #include "Character.h"
+#include "GameImage.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -25,11 +26,12 @@ int main() {
     bool running = true;
 
     Character character = Character(&canvas, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+    GameImage gameImage = GameImage(&canvas);
+
 
     while (running)
     {
         // Check for input (key presses or window events)
-        character.setVelocity(2);
         character.reactToMovementKeys();
 
         // Clear the window for the next frame rendering
@@ -38,6 +40,8 @@ int main() {
         // Update game logic
         // Draw();
         renderBackground(canvas);
+
+        gameImage.drawImage("assets/tiles/0.png", 0, 0);
         character.draw();
 
         // Display the frame on the screen. This must be called once the frame
