@@ -14,12 +14,11 @@ class GameImage {
     }
 
     void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY) {
-        for (int i=positionX; i < positionX + image->width; i++) {
-            for (int j=positionY; j < positionY + image->height; j++) {
-                char r = image->at(i%image->width, j%image->height, 0);
-                char g = image->at(i%image->width, j%image->height, 1);
-                char b = image->at(i%image->width, j%image->height, 2);
-                canvas->draw(i, j, r, g, b);
+        for (int i=0; i < image->width; i++) {
+            for (int j=0; j < image->height; j++) {
+                if (image->alphaAt(i, j) > 0) {
+                    canvas->draw(i + positionX, j + positionY, image->at(i, j));
+                }
             }
         }
     }
