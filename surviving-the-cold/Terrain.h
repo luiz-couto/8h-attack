@@ -13,6 +13,8 @@
 
 enum TileKind {
     FULL_GRASS,
+    FULL_EARTH,
+    FULL_WATER,
 };
 
 std::string getTileFile(int tileKind) {
@@ -20,7 +22,7 @@ std::string getTileFile(int tileKind) {
 }
 
 // Terrain file = *.terrain
-// First line is relative to the size MxN
+// First line indicates the size MxN
 // The others indicate which tiles to use
 // The tiles data is stored to avoid loading them again all the time
 class Terrain {

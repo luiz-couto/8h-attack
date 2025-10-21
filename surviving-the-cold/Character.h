@@ -3,25 +3,17 @@
 
 #define CHARACTER_WIDTH 40
 #define CHARACTER_HEIGHT 40
+#define CHARACTER_START_VELOCITY 6
 
 struct Position {
     int x,y;
-};
-
-enum LockMovement {
-    NONE,
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
 };
 
 class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
-    int velocity = 6;
-    LockMovement lockMove = LockMovement::NONE;
+    int velocity = CHARACTER_START_VELOCITY;
 
     public:
     Character(GamesEngineeringBase::Window *canvas) {
@@ -51,23 +43,18 @@ class Character {
         this->velocity = newVelocity;
     }
 
-    void move(int xIncrement, int yIncrement) {
-        this->position.x = this->position.x + xIncrement;
-        this->position.y = this->position.y + yIncrement;
-    }
-
     void reactToMovementKeys() {
-        if (this->canvas->keyPressed('W') && this->lockMove != LockMovement::UP) {
-            this->move(0, -(this->velocity));
+        if (this->canvas->keyPressed('W')) {
+            this->position.y = max(this->position.y - this->velocity, 0);
         }
-        if (this->canvas->keyPressed('A') && this->lockMove != LockMovement::LEFT) {
-            this->move(-(this->velocity), 0);
+        if (this->canvas->keyPressed('A')) {
+            this->position.x = max(this->position.x - this->velocity, 0);
         }
-        if (this->canvas->keyPressed('D') && this->lockMove != LockMovement::RIGHT) {
-            this->move(this->velocity, 0);
+        if (this->canvas->keyPressed('D')) {
+            this->position.x = min(this->position.x + this->velocity, this->canvas->getWidth() - CHARACTER_WIDTH);
         }
-        if (this->canvas->keyPressed('S') && this->lockMove != LockMovement::DOWN) {
-            this->move(0, this->velocity);
+        if (this->canvas->keyPressed('S')) {
+            this->position.y = min(this->position.y + this->velocity, this->canvas->getHeight() - CHARACTER_HEIGHT);
         }
     }
     
