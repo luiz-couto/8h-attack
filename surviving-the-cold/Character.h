@@ -1,8 +1,10 @@
+#pragma once
+
 #include "GamesEngineeringBase.h"
 #include "Debug.h"
 
-#define CHARACTER_WIDTH 40
-#define CHARACTER_HEIGHT 40
+#define CHARACTER_WIDTH 48
+#define CHARACTER_HEIGHT 48
 #define CHARACTER_START_VELOCITY 6
 
 struct Position {
@@ -14,8 +16,9 @@ class Character {
     GamesEngineeringBase::Window* canvas;
     Position position;
     int velocity = CHARACTER_START_VELOCITY;
-
+    
     public:
+    bool locked = false;
     Character(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
 
@@ -39,11 +42,19 @@ class Character {
         this->position.y = y;
     }
 
+    Position getPosition() {
+        return this->position;
+    }
+
     void setVelocity(int newVelocity) {
         this->velocity = newVelocity;
     }
 
     void reactToMovementKeys() {
+        if (this->locked == true) {
+            return;
+        }
+        //std::cout << "Reacting to movement keys" << std::endl;
         if (this->canvas->keyPressed('W')) {
             this->position.y = max(this->position.y - this->velocity, 0);
         }

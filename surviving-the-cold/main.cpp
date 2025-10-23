@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "GameImage.h"
 #include "Terrain.h"
+#include "Camera.h"
+#include "Debug.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -29,9 +31,12 @@ int main() {
     Character character = Character(&canvas, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
     GameImage gameImage = GameImage(&canvas);
     Terrain terrain = Terrain(&canvas);
+    Camera camera = Camera(&character, &terrain);
 
-    terrain.loadTerrain("assets/terrains/1.terrain");
-    terrain.printTerrainRaw();
+    terrain.loadTerrain("assets/terrains/2.terrain");
+    Debug::printBool(terrain.isOutOfBounds(16,13));
+
+    //terrain.printTerrainRaw();
 
     while (running)
     {
@@ -45,7 +50,7 @@ int main() {
         // Draw();
         renderBackground(canvas);
 
-        terrain.drawTerrain(0, 0);
+        camera.drawNextFrame();
         character.draw();
 
         // Display the frame on the screen. This must be called once the frame

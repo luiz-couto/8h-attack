@@ -88,14 +88,22 @@ class Terrain {
     }
 
     void drawTerrain(int startM, int startN) {
-        for (int i=startM; i<this->height; i++) {
-            for (int j=startN; j<this->width; j++) {
-                int tileKind = this->terrain[i][j];
+        for (int j=startN; j<this->canvas->getHeight() / TILE_SIZE; j++) {
+            for (int i=startM; i<this->canvas->getWidth() / TILE_SIZE; i++) {
+                int tileKind = this->terrain[j][i];
                 GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
                 this->gameImage->drawImage(tileImage, i * TILE_SIZE, j * TILE_SIZE);
             }
         }
+    }
 
+    bool isOutOfBounds(int startM, int startN) {
+        if (startM < 0 || startN < 0) {
+            return true;
+        }
+        int tilesWidth = (this->canvas->getWidth() / TILE_SIZE);
+        int tilesHeight = (this->canvas->getHeight() / TILE_SIZE);
+        return tilesWidth > this->height - startN || tilesHeight > this->width - startM;
     }
 
     void printTerrainRaw() {
