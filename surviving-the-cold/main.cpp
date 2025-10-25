@@ -34,10 +34,6 @@ int main() {
     Camera camera = Camera(&character, &terrain);
 
     terrain.loadTerrain("assets/terrains/2.terrain");
-    Debug::printBool(terrain.isOutOfBounds(16,13));
-
-    //terrain.printTerrainRaw();
-
     while (running)
     {
         // Check for input (key presses or window events)

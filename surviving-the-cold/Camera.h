@@ -7,11 +7,14 @@
 #define OFFSET_X 512
 #define OFFSET_Y 384
 
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
+
 class Camera {
     private:
     Character *character;
     Terrain *terrain;
-    int lastX, lastY;
+    int x, y;
 
     public:
     Camera(Character *character, Terrain *terrain) {
@@ -19,25 +22,25 @@ class Camera {
         this->terrain = terrain;
 
         Position charPos = this->character->getPosition();
-        this->lastX = (charPos.x - OFFSET_X)/32;
-        this->lastY = (charPos.y - OFFSET_Y)/32;
+        this->x = charPos.x;
+        this->y = charPos.y;
     }
 
     void drawNextFrame() {
         Position charPos = this->character->getPosition();
-        std::cout << "Character position: (" << charPos.x << ", " << charPos.y << ")" << std::endl;
-
-        bool isOutOfBounds = this->terrain->isOutOfBounds((charPos.x - OFFSET_X)/32, (charPos.y - OFFSET_Y)/32);
-        std::cout << "Is out of bounds: " << isOutOfBounds << std::endl;
-        if (isOutOfBounds) {
-            //this->character->locked = false;
-            this->terrain->drawTerrain(this->lastX, this->lastY);
-            return;
+        
+        int possibleX = charPos.x - OFFSET_X;
+        int possibleM = possibleX / TILE_SIZE;
+        if (possibleM >= 0 && possibleM + (WINDOW_WIDTH / TILE_SIZE) <= this->terrain->width) {
+            this->x = possibleX;
         }
-        //this->character
-        this->terrain->drawTerrain((charPos.x - OFFSET_X)/32, (charPos.y - OFFSET_Y)/32);
-        std::cout << "Drawing terrain at: (" << (charPos.x - OFFSET_X)/32 << ", " << (charPos.y - OFFSET_Y)/32 << ")" << std::endl;
-        this->lastX = (charPos.x - OFFSET_X)/32;
-        this->lastY = (charPos.y - OFFSET_Y)/32;
+
+        int possibleY = charPos.y - OFFSET_Y;
+        int possibleN = possibleY / TILE_SIZE;
+        if (possibleN >= 0 && possibleN + (WINDOW_HEIGHT / TILE_SIZE) <= this->terrain->height) {
+            this->y = possibleY;
+        }
+
+        this->terrain->drawTerrain(this->x/TILE_SIZE, this->y/TILE_SIZE);
     }
 };
