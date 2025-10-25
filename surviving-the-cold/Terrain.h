@@ -28,12 +28,12 @@ std::string getTileFile(int tileKind) {
 class Terrain {
     private:
     GamesEngineeringBase::Window* canvas;
-    int width, height;
     int** terrain;
     GamesEngineeringBase::Image* tilesData[NUMBER_OF_TILES];
     GameImage* gameImage;
-
+    
     public:
+    int width, height;
     Terrain(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
         this->terrain = nullptr;
@@ -88,14 +88,17 @@ class Terrain {
     }
 
     void drawTerrain(int startM, int startN) {
-        for (int i=startM; i<this->height; i++) {
-            for (int j=startN; j<this->width; j++) {
-                int tileKind = this->terrain[i][j];
+        int tileY = startN;
+        for (int i=0; i<this->canvas->getHeight(); i=i+TILE_SIZE) {
+            int tileX = startM;
+            for (int j=0; j<this->canvas->getWidth(); j=j+TILE_SIZE) {
+                int tileKind = this->terrain[tileY][tileX];
                 GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
-                this->gameImage->drawImage(tileImage, i * TILE_SIZE, j * TILE_SIZE);
+                this->gameImage->drawImage(tileImage, j, i);
+                tileX++;
             }
+            tileY++;
         }
-
     }
 
     void printTerrainRaw() {
