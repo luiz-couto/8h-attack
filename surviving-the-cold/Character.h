@@ -54,7 +54,7 @@ class Character {
         this->velocity = newVelocity;
     }
 
-    void reactToMovementKeys() {
+    void reactToMovementKeys(int boundaryWidth, int boundaryHeight) {
         if (this->canvas->keyPressed('W')) {
             this->position.y = max(this->position.y - this->velocity, 0);
         }
@@ -62,23 +62,23 @@ class Character {
             this->position.x = max(this->position.x - this->velocity, 0);
         }
         if (this->canvas->keyPressed('D')) {
-            this->position.x = min(this->position.x + this->velocity, this->canvas->getWidth() - CHARACTER_WIDTH);
+            this->position.x = min(this->position.x + this->velocity, boundaryWidth - CHARACTER_WIDTH);
         }
         if (this->canvas->keyPressed('S')) {
-            this->position.y = min(this->position.y + this->velocity, this->canvas->getHeight() - CHARACTER_HEIGHT);
+            this->position.y = min(this->position.y + this->velocity, boundaryHeight - CHARACTER_HEIGHT);
         }
         if (!this->lockedX) {
-            this->screenPosition.x = this->position.x;
+            this->screenPosition.x = this->position.x % this->canvas->getWidth();
         }
         if (!this->lockedY) {
-            this->screenPosition.y = this->position.y;
+            this->screenPosition.y = this->position.y % this->canvas->getHeight();
         }
     }
     
     void draw() {
         for (int i=this->screenPosition.x; i < this->screenPosition.x + CHARACTER_WIDTH; i++) {
             for (int j=this->screenPosition.y; j < this->screenPosition.y + CHARACTER_HEIGHT; j++) {
-                canvas->draw(i % this->canvas->getWidth(), j % this->canvas->getHeight(), 255, 255, 255);
+                canvas->draw(i, j, 255, 255, 255);
             }
         }
     }
