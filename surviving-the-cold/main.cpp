@@ -33,7 +33,7 @@ int main() {
     Terrain terrain = Terrain(&canvas);
     Camera camera = Camera(&character, &terrain);
 
-    terrain.loadTerrain("assets/terrains/2.terrain");
+    terrain.loadTerrain("assets/terrains/3.terrain");
     while (running)
     {
         // Check for input (key presses or window events)

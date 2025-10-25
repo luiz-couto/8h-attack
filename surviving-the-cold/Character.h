@@ -15,10 +15,12 @@ class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
+    Position screenPosition;
     int velocity = CHARACTER_START_VELOCITY;
     
     public:
-    bool locked = false;
+    bool lockedX = true;
+    bool lockedY = true;
     Character(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
 
@@ -26,6 +28,7 @@ class Character {
         pos.x = 0;
         pos.y = 0;
         this->position = pos;
+        this->screenPosition = pos;
     }
 
     Character(GamesEngineeringBase::Window *canvas, int x, int y) {
@@ -35,6 +38,7 @@ class Character {
         pos.x = x;
         pos.y = y;
         this->position = pos;
+        this->screenPosition = pos;
     }
     
     void setPosition(int x, int y) {
@@ -51,10 +55,6 @@ class Character {
     }
 
     void reactToMovementKeys() {
-        if (this->locked == true) {
-            return;
-        }
-        //std::cout << "Reacting to movement keys" << std::endl;
         if (this->canvas->keyPressed('W')) {
             this->position.y = max(this->position.y - this->velocity, 0);
         }
@@ -67,12 +67,18 @@ class Character {
         if (this->canvas->keyPressed('S')) {
             this->position.y = min(this->position.y + this->velocity, this->canvas->getHeight() - CHARACTER_HEIGHT);
         }
+        if (!this->lockedX) {
+            this->screenPosition.x = this->position.x;
+        }
+        if (!this->lockedY) {
+            this->screenPosition.y = this->position.y;
+        }
     }
     
     void draw() {
-        for (int i=this->position.x; i < this->position.x + CHARACTER_WIDTH; i++) {
-            for (int j=this->position.y; j < this->position.y + CHARACTER_HEIGHT; j++) {
-                canvas->draw(i, j, 255, 255, 255);
+        for (int i=this->screenPosition.x; i < this->screenPosition.x + CHARACTER_WIDTH; i++) {
+            for (int j=this->screenPosition.y; j < this->screenPosition.y + CHARACTER_HEIGHT; j++) {
+                canvas->draw(i % this->canvas->getWidth(), j % this->canvas->getHeight(), 255, 255, 255);
             }
         }
     }

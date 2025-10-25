@@ -33,12 +33,18 @@ class Camera {
         int possibleM = possibleX / TILE_SIZE;
         if (possibleM >= 0 && possibleM + (WINDOW_WIDTH / TILE_SIZE) <= this->terrain->width) {
             this->x = possibleX;
+            this->character->lockedX = true;
+        } else {
+            this->character->lockedX = false;
         }
 
         int possibleY = charPos.y - OFFSET_Y;
         int possibleN = possibleY / TILE_SIZE;
         if (possibleN >= 0 && possibleN + (WINDOW_HEIGHT / TILE_SIZE) <= this->terrain->height) {
             this->y = possibleY;
+            this->character->lockedY = true;
+        } else {
+            this->character->lockedY = false;
         }
 
         this->terrain->drawTerrain(this->x/TILE_SIZE, this->y/TILE_SIZE);
