@@ -31,7 +31,7 @@ class Terrain {
     int** terrain;
     GamesEngineeringBase::Image* tilesData[NUMBER_OF_TILES];
     GameImage* gameImage;
-    
+
     public:
     int width, height;
     Terrain(GamesEngineeringBase::Window *canvas) {
@@ -87,17 +87,23 @@ class Terrain {
         }
     }
 
-    void drawTerrain(int startM, int startN) {
-        int tileY = startN;
-        for (int i=0; i<this->canvas->getHeight(); i=i+TILE_SIZE) {
-            int tileX = startM;
-            for (int j=0; j<this->canvas->getWidth(); j=j+TILE_SIZE) {
+    void drawTerrain(int cameraX, int cameraY) {
+        for (int i=0; i < this->canvas->getHeight(); i++) {
+            for (int j=0; j < this->canvas->getWidth(); j++) {
+                int worldPixelX = cameraX + j;
+                int worldPixelY = cameraY + i;
+
+                int tileX = worldPixelX / TILE_SIZE;
+                int tileY = worldPixelY / TILE_SIZE;
+
                 int tileKind = this->terrain[tileY][tileX];
                 GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
-                this->gameImage->drawImage(tileImage, j, i);
-                tileX++;
+
+                int tileImageX = worldPixelX % TILE_SIZE;
+                int tileImageY = worldPixelY % TILE_SIZE;
+
+                canvas->draw(j, i, tileImage->at(tileImageX, tileImageY));
             }
-            tileY++;
         }
     }
 

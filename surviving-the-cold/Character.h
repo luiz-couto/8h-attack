@@ -5,7 +5,7 @@
 
 #define CHARACTER_WIDTH 48
 #define CHARACTER_HEIGHT 48
-#define CHARACTER_START_VELOCITY 6
+#define CHARACTER_START_VELOCITY 10
 
 struct Position {
     int x,y;
@@ -15,10 +15,10 @@ class Character {
     private:
     GamesEngineeringBase::Window* canvas;
     Position position;
+    Position screenPosition;
     int velocity = CHARACTER_START_VELOCITY;
     
     public:
-    bool locked = false;
     Character(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
 
@@ -26,6 +26,7 @@ class Character {
         pos.x = 0;
         pos.y = 0;
         this->position = pos;
+        this->screenPosition = pos;
     }
 
     Character(GamesEngineeringBase::Window *canvas, int x, int y) {
@@ -35,6 +36,7 @@ class Character {
         pos.x = x;
         pos.y = y;
         this->position = pos;
+        this->screenPosition = pos;
     }
     
     void setPosition(int x, int y) {
@@ -50,11 +52,7 @@ class Character {
         this->velocity = newVelocity;
     }
 
-    void reactToMovementKeys() {
-        if (this->locked == true) {
-            return;
-        }
-        //std::cout << "Reacting to movement keys" << std::endl;
+    void reactToMovementKeys(int boundaryWidth, int boundaryHeight) {
         if (this->canvas->keyPressed('W')) {
             this->position.y = max(this->position.y - this->velocity, 0);
         }
@@ -62,17 +60,22 @@ class Character {
             this->position.x = max(this->position.x - this->velocity, 0);
         }
         if (this->canvas->keyPressed('D')) {
-            this->position.x = min(this->position.x + this->velocity, this->canvas->getWidth() - CHARACTER_WIDTH);
+            this->position.x = min(this->position.x + this->velocity, boundaryWidth - CHARACTER_WIDTH);
         }
         if (this->canvas->keyPressed('S')) {
-            this->position.y = min(this->position.y + this->velocity, this->canvas->getHeight() - CHARACTER_HEIGHT);
+            this->position.y = min(this->position.y + this->velocity, boundaryHeight - CHARACTER_HEIGHT);
         }
     }
     
-    void draw() {
-        for (int i=this->position.x; i < this->position.x + CHARACTER_WIDTH; i++) {
-            for (int j=this->position.y; j < this->position.y + CHARACTER_HEIGHT; j++) {
-                canvas->draw(i, j, 255, 255, 255);
+    void draw(int cameraX, int cameraY) {
+        this->screenPosition.x = this->position.x - cameraX;
+        this->screenPosition.y = this->position.y - cameraY;
+
+        for (int i=this->screenPosition.x; i < this->screenPosition.x + CHARACTER_WIDTH; i++) {
+            for (int j=this->screenPosition.y; j < this->screenPosition.y + CHARACTER_HEIGHT; j++) {
+                if (i >=0 && i < this->canvas->getWidth() && j >=0 && j < this->canvas->getHeight()) {
+                    canvas->draw(i, j, 255, 255, 255);
+                }
             }
         }
     }
