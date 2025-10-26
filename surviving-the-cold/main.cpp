@@ -14,26 +14,15 @@
 // pallete
 // main color = (100,125,255) - light blue
 
-void renderBackground(GamesEngineeringBase::Window &canvas) {
-    unsigned char backgroundColorPixel[3] = {100, 125, 255};
-    for (int i=0; i<WINDOW_WIDTH; i++) {
-        for (int j=0; j<WINDOW_HEIGHT; j++) {
-            canvas.draw(i, j, backgroundColorPixel);
-        }
-    }
-}
-
 int main() {
     GamesEngineeringBase::Window canvas;
     canvas.create(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
     bool running = true;
 
     Character character = Character(&canvas, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
-    GameImage gameImage = GameImage(&canvas);
     Terrain terrain = Terrain(&canvas);
     Camera camera = Camera(&character, &terrain);
 
-    
     terrain.loadTerrain("assets/terrains/3.terrain");
     std::cout << "Terrain size: " << terrain.width << " x " << terrain.height << std::endl;
     while (running)
@@ -46,8 +35,6 @@ int main() {
         
         // Update game logic
         // Draw();
-        renderBackground(canvas);
-
         camera.drawNextFrame();
 
         // Display the frame on the screen. This must be called once the frame

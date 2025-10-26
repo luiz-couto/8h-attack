@@ -33,18 +33,12 @@ class Camera {
         int terrainPixelWidth = this->terrain->width * TILE_SIZE;
         if (possibleX >= 0 && (possibleX + WINDOW_WIDTH) <= terrainPixelWidth) {
             this->x = possibleX;
-            this->character->lockedX = true;
-        } else {
-            this->character->lockedX = false;
         }
 
         int possibleY = charPos.y - OFFSET_Y;
         int terrainPixelHeight = this->terrain->height * TILE_SIZE;
         if (possibleY >= 0 && (possibleY + WINDOW_HEIGHT) <= terrainPixelHeight) {
             this->y = possibleY;
-            this->character->lockedY = true;
-        } else {
-            this->character->lockedY = false;
         }
 
         this->terrain->drawTerrain(this->x/TILE_SIZE, this->y/TILE_SIZE);

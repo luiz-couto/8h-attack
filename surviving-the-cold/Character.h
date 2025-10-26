@@ -19,8 +19,6 @@ class Character {
     int velocity = CHARACTER_START_VELOCITY;
     
     public:
-    bool lockedX = true;
-    bool lockedY = true;
     Character(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
 
@@ -70,12 +68,9 @@ class Character {
     }
     
     void draw(int cameraX, int cameraY) {
-        if (!this->lockedX) {
-            this->screenPosition.x = this->position.x - cameraX;
-        }
-        if (!this->lockedY) {
-            this->screenPosition.y = this->position.y - cameraY;
-        }
+        this->screenPosition.x = this->position.x - cameraX;
+        this->screenPosition.y = this->position.y - cameraY;
+
         for (int i=this->screenPosition.x; i < this->screenPosition.x + CHARACTER_WIDTH; i++) {
             for (int j=this->screenPosition.y; j < this->screenPosition.y + CHARACTER_HEIGHT; j++) {
                 if (i >=0 && i < this->canvas->getWidth() && j >=0 && j < this->canvas->getHeight()) {
