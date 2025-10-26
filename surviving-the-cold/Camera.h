@@ -41,7 +41,7 @@ class Camera {
             this->y = possibleY;
         }
 
-        this->terrain->drawTerrain(this->x/TILE_SIZE, this->y/TILE_SIZE);
+        this->terrain->drawTerrain(this->x, this->y);
         this->character->draw(this->x, this->y);
     }
 };

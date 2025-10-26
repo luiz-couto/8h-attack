@@ -5,7 +5,7 @@
 
 #define CHARACTER_WIDTH 48
 #define CHARACTER_HEIGHT 48
-#define CHARACTER_START_VELOCITY 6
+#define CHARACTER_START_VELOCITY 10
 
 struct Position {
     int x,y;
