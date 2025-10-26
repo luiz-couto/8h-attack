@@ -33,11 +33,13 @@ int main() {
     Terrain terrain = Terrain(&canvas);
     Camera camera = Camera(&character, &terrain);
 
+    
     terrain.loadTerrain("assets/terrains/3.terrain");
+    std::cout << "Terrain size: " << terrain.width << " x " << terrain.height << std::endl;
     while (running)
     {
         // Check for input (key presses or window events)
-        character.reactToMovementKeys();
+        character.reactToMovementKeys(terrain.width * TILE_SIZE, terrain.height * TILE_SIZE);
 
         // Clear the window for the next frame rendering
         canvas.clear();
@@ -47,7 +49,6 @@ int main() {
         renderBackground(canvas);
 
         camera.drawNextFrame();
-        character.draw();
 
         // Display the frame on the screen. This must be called once the frame
         //is finished in order to display the frame.

@@ -48,5 +48,6 @@ class Camera {
         }
 
         this->terrain->drawTerrain(this->x/TILE_SIZE, this->y/TILE_SIZE);
+        this->character->draw(this->x, this->y);
     }
 };

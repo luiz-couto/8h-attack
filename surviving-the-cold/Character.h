@@ -67,18 +67,20 @@ class Character {
         if (this->canvas->keyPressed('S')) {
             this->position.y = min(this->position.y + this->velocity, boundaryHeight - CHARACTER_HEIGHT);
         }
-        if (!this->lockedX) {
-            this->screenPosition.x = this->position.x % this->canvas->getWidth();
-        }
-        if (!this->lockedY) {
-            this->screenPosition.y = this->position.y % this->canvas->getHeight();
-        }
     }
     
-    void draw() {
+    void draw(int cameraX, int cameraY) {
+        if (!this->lockedX) {
+            this->screenPosition.x = this->position.x - cameraX;
+        }
+        if (!this->lockedY) {
+            this->screenPosition.y = this->position.y - cameraY;
+        }
         for (int i=this->screenPosition.x; i < this->screenPosition.x + CHARACTER_WIDTH; i++) {
             for (int j=this->screenPosition.y; j < this->screenPosition.y + CHARACTER_HEIGHT; j++) {
-                canvas->draw(i, j, 255, 255, 255);
+                if (i >=0 && i < this->canvas->getWidth() && j >=0 && j < this->canvas->getHeight()) {
+                    canvas->draw(i, j, 255, 255, 255);
+                }
             }
         }
     }
