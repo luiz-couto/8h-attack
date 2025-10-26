@@ -31,7 +31,7 @@ class Terrain {
     int** terrain;
     GamesEngineeringBase::Image* tilesData[NUMBER_OF_TILES];
     GameImage* gameImage;
-    
+
     public:
     int width, height;
     Terrain(GamesEngineeringBase::Window *canvas) {
