@@ -30,8 +30,8 @@ class Camera {
         Position charPos = this->character->getPosition();
         
         int possibleX = charPos.x - OFFSET_X;
-        int possibleM = possibleX / TILE_SIZE;
-        if (possibleM >= 0 && possibleM + (WINDOW_WIDTH / TILE_SIZE) <= this->terrain->width) {
+        int terrainPixelWidth = this->terrain->width * TILE_SIZE;
+        if (possibleX >= 0 && (possibleX + WINDOW_WIDTH) <= terrainPixelWidth) {
             this->x = possibleX;
             this->character->lockedX = true;
         } else {
@@ -39,8 +39,8 @@ class Camera {
         }
 
         int possibleY = charPos.y - OFFSET_Y;
-        int possibleN = possibleY / TILE_SIZE;
-        if (possibleN >= 0 && possibleN + (WINDOW_HEIGHT / TILE_SIZE) <= this->terrain->height) {
+        int terrainPixelHeight = this->terrain->height * TILE_SIZE;
+        if (possibleY >= 0 && (possibleY + WINDOW_HEIGHT) <= terrainPixelHeight) {
             this->y = possibleY;
             this->character->lockedY = true;
         } else {
