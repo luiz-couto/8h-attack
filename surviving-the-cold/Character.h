@@ -80,12 +80,11 @@ class Character {
     }
 
     void selectNextFrame(char keyPressed, GamesEngineeringBase::Image *group[5]) {
-        if (this->loadingFrame < LOADING_FRAME) {
-            this->loadingFrame++;
-            return;
-        }
-
         if (this->lastKeyPressed == keyPressed) {
+            if (this->loadingFrame < LOADING_FRAME) {
+                this->loadingFrame++;
+                return;
+            }
             this->frameCount++;
             if (this->frameCount == 5) {
                 this->frameCount = 1;
@@ -100,21 +99,25 @@ class Character {
     }
 
     void reactToMovementKeys(int boundaryWidth, int boundaryHeight) {
-        if (this->canvas->keyPressed('W')) {
-            this->position.y = max(this->position.y - this->velocity, 0);
-            selectNextFrame('W', this->rotationImages.north);
-        }
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->velocity, 0);
             selectNextFrame('A', this->rotationImages.west);
+            return;
         }
         if (this->canvas->keyPressed('D')) {
             this->position.x = min(this->position.x + this->velocity, boundaryWidth - CHARACTER_WIDTH);
             selectNextFrame('D', this->rotationImages.east);
+            return;
+        }
+        if (this->canvas->keyPressed('W')) {
+            this->position.y = max(this->position.y - this->velocity, 0);
+            selectNextFrame('W', this->rotationImages.north);
+            return;
         }
         if (this->canvas->keyPressed('S')) {
             this->position.y = min(this->position.y + this->velocity, boundaryHeight - CHARACTER_HEIGHT);
             selectNextFrame('S', this->rotationImages.south);
+            return;
         }
     }
 
