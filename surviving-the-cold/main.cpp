@@ -19,7 +19,7 @@ int main() {
     canvas.create(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
     bool running = true;
 
-    Character character = Character(&canvas, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+    Character character = Character(&canvas, "caz", WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
     Terrain terrain = Terrain(&canvas);
     Camera camera = Camera(&character, &terrain);
 
