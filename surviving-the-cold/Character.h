@@ -3,6 +3,7 @@
 #include <string>
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
+#include "Position.h"
 #include "Debug.h"
 
 #define CHARACTER_WIDTH 96
@@ -10,10 +11,6 @@
 #define CHARACTER_START_VELOCITY 7
 #define LOADING_FRAME 4
 #define IDLE_FRAME_TIME 0.3f
-
-struct Position {
-    int x,y;
-};
 
 struct Rotation {
     GamesEngineeringBase::Image *south[5];

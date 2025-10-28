@@ -1,6 +1,7 @@
 #include <iostream>
 #include "GamesEngineeringBase.h"
 #include "Character.h"
+#include "NPC.h"
 #include "GameImage.h"
 #include "Terrain.h"
 #include "Camera.h"
@@ -21,7 +22,11 @@ int main() {
 
     Character character = Character(&canvas, "caz", WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
     Terrain terrain = Terrain(&canvas);
-    Camera camera = Camera(&character, &terrain);
+    NPC flames = NPC(&canvas, "flames", WINDOW_WIDTH/2 + 200, WINDOW_HEIGHT/2);
+
+    NPC* npcs[1] = { &flames };
+
+    Camera camera = Camera(&character, npcs, &terrain);
 
     terrain.loadTerrain("assets/terrains/4.terrain");
     std::cout << "Terrain size: " << terrain.width << " x " << terrain.height << std::endl;

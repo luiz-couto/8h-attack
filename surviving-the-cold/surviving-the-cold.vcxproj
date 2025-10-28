@@ -128,6 +128,8 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="GameImage.h" />
     <ClInclude Include="GamesEngineeringBase.h" />
+    <ClInclude Include="NPC.h" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="Terrain.h" />
   </ItemGroup>
   <ItemGroup>

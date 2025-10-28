@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "NPC.h"
 #include "Character.h"
 #include "Terrain.h"
 
@@ -10,23 +11,31 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
+#define NPC_COUNT 1
+
 class Camera {
     private:
     Character *character;
+    NPC *npcs[NPC_COUNT];
     Terrain *terrain;
     int x, y;
 
     public:
-    Camera(Character *character, Terrain *terrain) {
+    Camera(Character *character, NPC **npcs, Terrain *terrain) {
         this->character = character;
         this->terrain = terrain;
 
         Position charPos = this->character->getPosition();
         this->x = charPos.x;
         this->y = charPos.y;
+
+        for (int i=0; i<NPC_COUNT; i++) {
+            this->npcs[i] = npcs[i];
+        }
     }
 
     void drawNextFrame() {
+        // update camera
         Position charPos = this->character->getPosition();
         
         int possibleX = charPos.x - OFFSET_X;
@@ -41,7 +50,17 @@ class Camera {
             this->y = possibleY;
         }
 
+        // update NPCs
+        for (int i=0; i<NPC_COUNT; i++) {
+            this->npcs[i]->update(&charPos);
+        }
+
+        // draw
         this->terrain->drawTerrain(this->x, this->y);
         this->character->draw(this->x, this->y);
+
+        for (int i=0; i<NPC_COUNT; i++) {
+            this->npcs[i]->draw(this->x, this->y);
+        }
     }
 };
