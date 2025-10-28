@@ -3,15 +3,13 @@
 #include "Position.h"
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
+#include "RigidBody.h"
 
 #define START_SPEED 2
 #define TIME_BETWEEN_FRAMES 0.25f
 
-class NPC {
+class NPC : public RigidBody {
     private:
-    GamesEngineeringBase::Window* canvas;
-    GameImage *gameImage;
-    Position position;
     std::string name;
     GamesEngineeringBase::Image *frames[3];
     int frameCount = 0;
@@ -21,16 +19,8 @@ class NPC {
     float timeElapsed = 0.0f;
 
     public:
-    NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) {
-        this->canvas = canvas;
-        this->gameImage = new GameImage(canvas);
+    NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) : RigidBody(x, y, canvas) {
         this->name = name;
-
-        Position pos;
-        pos.x = x;
-        pos.y = y;
-        this->position = pos;
-
         loadFrames();
     }
 
