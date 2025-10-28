@@ -28,7 +28,7 @@ class Manager {
         this->terrain->loadTerrain("assets/terrains/4.terrain");
 
         for (int i=0; i<NPCS_NUMBER; i++) {
-            NPC *flames = new NPC(canvas, "flames", WINDOW_WIDTH/2 + (i+1*100), WINDOW_HEIGHT/2);
+            NPC *flames = new NPC(canvas, "flames", WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
             this->npcs[i] = flames;
         }
     }
