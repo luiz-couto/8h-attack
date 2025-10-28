@@ -9,6 +9,7 @@
 #define CHARACTER_HEIGHT 96
 #define CHARACTER_START_VELOCITY 7
 #define LOADING_FRAME 4
+#define IDLE_FRAME_TIME 0.3f
 
 struct Position {
     int x,y;
@@ -125,7 +126,7 @@ class Character {
         }
 
         this->timeElapsed += this->timer.dt();
-        if (timeElapsed > 0.3f) {
+        if (timeElapsed > IDLE_FRAME_TIME) {
             this->frameCount = 0;
             switch (this->lastKeyPressed) {
                 case 'A':
