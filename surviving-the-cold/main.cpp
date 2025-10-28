@@ -23,7 +23,7 @@ int main() {
     Terrain terrain = Terrain(&canvas);
     Camera camera = Camera(&character, &terrain);
 
-    terrain.loadTerrain("assets/terrains/3.terrain");
+    terrain.loadTerrain("assets/terrains/4.terrain");
     std::cout << "Terrain size: " << terrain.width << " x " << terrain.height << std::endl;
     while (running)
     {

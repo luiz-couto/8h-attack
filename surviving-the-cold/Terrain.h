@@ -102,7 +102,9 @@ class Terrain {
                 int tileImageX = worldPixelX % TILE_SIZE;
                 int tileImageY = worldPixelY % TILE_SIZE;
 
-                canvas->draw(j, i, tileImage->at(tileImageX, tileImageY));
+                if (tileImage->alphaAt(tileImageX, tileImageY) > 0) {
+                    canvas->draw(j, i, tileImage->at(tileImageX, tileImageY));
+                }
             }
         }
     }
