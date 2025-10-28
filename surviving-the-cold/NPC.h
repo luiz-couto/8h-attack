@@ -53,9 +53,9 @@ class NPC : public RigidBody {
         }
     }
 
-    void draw(int cameraX, int cameraY) {
-        int screenPositionX = this->position.x - cameraX;
-        int screenPositionY = this->position.y - cameraY;
+    void draw(Position cameraPosition) {
+        int screenPositionX = this->position.x - cameraPosition.x;
+        int screenPositionY = this->position.y - cameraPosition.y;
 
         this->gameImage->drawImage(this->frames[this->frameCount], screenPositionX, screenPositionY);
     }

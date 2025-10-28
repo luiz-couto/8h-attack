@@ -87,11 +87,11 @@ class Terrain {
         }
     }
 
-    void drawTerrain(int cameraX, int cameraY) {
+    void drawTerrain(Position cameraPosition) {
         for (int i=0; i < this->canvas->getHeight(); i++) {
             for (int j=0; j < this->canvas->getWidth(); j++) {
-                int worldPixelX = cameraX + j;
-                int worldPixelY = cameraY + i;
+                int worldPixelX = cameraPosition.x + j;
+                int worldPixelY = cameraPosition.y + i;
 
                 int tileX = worldPixelX / TILE_SIZE;
                 int tileY = worldPixelY / TILE_SIZE;

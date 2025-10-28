@@ -1,66 +1,39 @@
 #pragma once
 
 #include <iostream>
-#include "NPC.h"
-#include "Character.h"
-#include "Terrain.h"
+#include "Position.h"
 
 #define OFFSET_X 512
 #define OFFSET_Y 384
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
-
-#define NPC_COUNT 1
+#define TILE_SIZE 32
 
 class Camera {
     private:
-    Character *character;
-    NPC *npcs[NPC_COUNT];
-    Terrain *terrain;
-    int x, y;
+    Position position;
 
     public:
-    Camera(Character *character, NPC **npcs, Terrain *terrain) {
-        this->character = character;
-        this->terrain = terrain;
-
-        Position charPos = this->character->getPosition();
-        this->x = charPos.x;
-        this->y = charPos.y;
-
-        for (int i=0; i<NPC_COUNT; i++) {
-            this->npcs[i] = npcs[i];
-        }
+    Camera(Position position) {
+        this->position = position;
     }
 
-    void drawNextFrame() {
-        // update camera
-        Position charPos = this->character->getPosition();
-        
-        int possibleX = charPos.x - OFFSET_X;
-        int terrainPixelWidth = this->terrain->width * TILE_SIZE;
+    Position getPosition() {
+        return this->position;
+    }
+
+    void update(Position playerPosition, int terrainWidth, int terrainHeight) {    
+        int possibleX = playerPosition.x - OFFSET_X;
+        int terrainPixelWidth = terrainWidth * TILE_SIZE;
         if (possibleX >= 0 && (possibleX + WINDOW_WIDTH) <= terrainPixelWidth) {
-            this->x = possibleX;
+            this->position.x = possibleX;
         }
 
-        int possibleY = charPos.y - OFFSET_Y;
-        int terrainPixelHeight = this->terrain->height * TILE_SIZE;
+        int possibleY = playerPosition.y - OFFSET_Y;
+        int terrainPixelHeight = terrainHeight * TILE_SIZE;
         if (possibleY >= 0 && (possibleY + WINDOW_HEIGHT) <= terrainPixelHeight) {
-            this->y = possibleY;
-        }
-
-        // update NPCs
-        for (int i=0; i<NPC_COUNT; i++) {
-            this->npcs[i]->update(&charPos);
-        }
-
-        // draw
-        this->terrain->drawTerrain(this->x, this->y);
-        this->character->draw(this->x, this->y);
-
-        for (int i=0; i<NPC_COUNT; i++) {
-            this->npcs[i]->draw(this->x, this->y);
+            this->position.y = possibleY;
         }
     }
 };

@@ -118,9 +118,9 @@ class Character : public RigidBody {
         }
     }
 
-    void draw(int cameraX, int cameraY) {
-        this->screenPosition.x = this->position.x - cameraX;
-        this->screenPosition.y = this->position.y - cameraY;
+    void draw(Position cameraPosition) {
+        this->screenPosition.x = this->position.x - cameraPosition.x;
+        this->screenPosition.y = this->position.y - cameraPosition.y;
 
         this->gameImage->drawImage(this->current, this->screenPosition.x, this->screenPosition.y);
     }
