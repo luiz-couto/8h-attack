@@ -8,7 +8,7 @@
 #define CHARACTER_WIDTH 96
 #define CHARACTER_HEIGHT 96
 #define CHARACTER_START_VELOCITY 7
-#define LOADING_FRAME 3
+#define LOADING_FRAME 4
 
 struct Position {
     int x,y;
@@ -28,6 +28,9 @@ class Character {
     Position position;
     Position screenPosition;
     int velocity = CHARACTER_START_VELOCITY;
+    
+    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
+    float timeElapsed = 0.0f;
     
     std::string name;
     Rotation rotationImages;
@@ -80,8 +83,9 @@ class Character {
     }
 
     void selectNextFrame(char keyPressed, GamesEngineeringBase::Image *group[5]) {
+        this->timeElapsed = 0.0f;
         if (this->lastKeyPressed == keyPressed) {
-            if (this->loadingFrame < LOADING_FRAME) {
+            if (this->loadingFrame < LOADING_FRAME && this->frameCount != 0) {
                 this->loadingFrame++;
                 return;
             }
@@ -118,6 +122,26 @@ class Character {
             this->position.y = min(this->position.y + this->velocity, boundaryHeight - CHARACTER_HEIGHT);
             selectNextFrame('S', this->rotationImages.south);
             return;
+        }
+
+        this->timeElapsed += this->timer.dt();
+        if (timeElapsed > 0.3f) {
+            this->frameCount = 0;
+            switch (this->lastKeyPressed) {
+                case 'A':
+                    this->current = this->rotationImages.west[this->frameCount];
+                    break;
+                case 'D':
+                    this->current = this->rotationImages.east[this->frameCount];
+                    break;
+                case 'W':
+                    this->current = this->rotationImages.north[this->frameCount];
+                    break;
+                case 'S':
+                    this->current = this->rotationImages.south[this->frameCount];
+                    break;
+            }
+            this->timeElapsed = 0.0f;
         }
     }
 
