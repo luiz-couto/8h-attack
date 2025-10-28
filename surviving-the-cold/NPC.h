@@ -15,11 +15,8 @@ class NPC : public RigidBody {
     int frameCount = 0;
     int speed = START_SPEED;
 
-    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
-    float timeElapsed = 0.0f;
-
     public:
-    NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) : RigidBody(x, y, canvas) {
+    NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) : RigidBody(canvas, x, y) {
         this->name = name;
         loadFrames();
     }

@@ -5,6 +5,7 @@
 #include "GameImage.h"
 #include "Position.h"
 #include "Debug.h"
+#include "RigidBody.h"
 
 #define CHARACTER_WIDTH 96
 #define CHARACTER_HEIGHT 96
@@ -19,17 +20,11 @@ struct Rotation {
     GamesEngineeringBase::Image *west[5];
 };
 
-class Character {
+class Character : public RigidBody {
     private:
-    GamesEngineeringBase::Window* canvas;
-    GameImage* gameImage;
-    Position position;
     Position screenPosition;
     int velocity = CHARACTER_START_VELOCITY;
-    
-    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
-    float timeElapsed = 0.0f;
-    
+
     std::string name;
     Rotation rotationImages;
     GamesEngineeringBase::Image *current;
@@ -38,16 +33,9 @@ class Character {
     int loadingFrame = 0;
 
     public:
-    Character(GamesEngineeringBase::Window *canvas, std::string name, int x, int y) {
-        this->canvas = canvas;
+    Character(GamesEngineeringBase::Window *canvas, std::string name, int x, int y) : RigidBody(canvas, x, y) {
         this->name = name;
-        this->gameImage = new GameImage(this->canvas);
-
-        Position pos;
-        pos.x = x;
-        pos.y = y;
-        this->position = pos;
-        this->screenPosition = pos;
+        this->screenPosition = this->position;
 
         Rotation rotationImages;
         loadAnimationFrames(rotationImages.south, "south");
@@ -65,19 +53,6 @@ class Character {
             frame->load("assets/characters/" + this->name + "/" + direction + "/" + std::to_string(i) + ".png");
             group[i] = frame;
         }
-    }
-    
-    void setPosition(int x, int y) {
-        this->position.x = x;
-        this->position.y = y;
-    }
-
-    Position getPosition() {
-        return this->position;
-    }
-
-    void setVelocity(int newVelocity) {
-        this->velocity = newVelocity;
     }
 
     void selectNextFrame(char keyPressed, GamesEngineeringBase::Image *group[5]) {
@@ -149,5 +124,4 @@ class Character {
 
         this->gameImage->drawImage(this->current, this->screenPosition.x, this->screenPosition.y);
     }
-
 };

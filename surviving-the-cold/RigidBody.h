@@ -13,8 +13,11 @@ class RigidBody {
     GameImage* gameImage;
     Position position;
 
+    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
+    float timeElapsed = 0.0f;
+
     public:
-    RigidBody(int x, int y, GamesEngineeringBase::Window* canvas) {
+    RigidBody(GamesEngineeringBase::Window* canvas, int x, int y) {
         this->canvas = canvas;
         this->gameImage = new GameImage(canvas);
 
@@ -22,6 +25,10 @@ class RigidBody {
         pos.x = x;
         pos.y = y;
         this->position = pos;
+    }
+
+    Position getPosition() {
+        return this->position;
     }
 
     bool detectCollision(RigidBody *rigidBody) {
