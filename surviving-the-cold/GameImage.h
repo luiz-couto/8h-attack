@@ -13,7 +13,7 @@ class GameImage {
         this->canvas = canvas;
     }
 
-    void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY) {
+    void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY, bool drawBorders = false) {
         for (int i=0; i < image->width; i++) {
             for (int j=0; j < image->height; j++) {
                 if (i + positionX < 0 || i + positionX >= canvas->getWidth() ||
@@ -22,6 +22,13 @@ class GameImage {
                 }
                 if (image->alphaAt(i, j) > 0) {
                     canvas->draw(i + positionX, j + positionY, image->at(i, j));
+                    continue;
+                }
+                if (drawBorders) {
+                    // Draw border pixel
+                    if (i == 0 || j == 0 || i == image->width - 1 || j == image->height - 1) {
+                        canvas->draw(i + positionX, j + positionY, 255,0,0); // red border
+                    }
                 }
             }
         }

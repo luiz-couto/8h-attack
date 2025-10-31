@@ -12,6 +12,7 @@ class RigidBody {
     GamesEngineeringBase::Window* canvas;
     GameImage* gameImage;
     Position position;
+    GamesEngineeringBase::Image *currentFrame;
 
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
     float timeElapsed = 0.0f;
@@ -32,16 +33,33 @@ class RigidBody {
     }
 
     bool detectCollision(RigidBody *rigidBody) {
-        int dx = rigidBody->position.x - this->position.x;
-        int dy = rigidBody->position.y - this->position.y;
+        // Rigid Body 1 properties
+        float radius1 = this->currentFrame->height / 2.0f;
+        float center1X = this->position.x + (this->currentFrame->width / 2.0f);
+        float center1Y = this->position.y + radius1;
 
-        float distance = sqrt(pow(dx, 2) +  pow(dy, 2));
-        if (distance <= COLLISION_THRESHOLD) {
+        // Rigid Body 2 properties
+        float radius2 = rigidBody->currentFrame->height / 2.0f;
+        float center2X = rigidBody->position.x + (rigidBody->currentFrame->width / 2.0f);
+        float center2Y = rigidBody->position.y + radius2;
+
+        // Calculate the distance between the two centers
+        float dx = center2X - center1X;
+        float dy = center2Y - center1Y;
+        float distanceBetweenCenters = sqrt(pow(dx, 2) + pow(dy, 2));
+
+        // Check for collision
+        if (distanceBetweenCenters <= (radius1 + radius2) - COLLISION_THRESHOLD) {
             return true;
         }
 
         return false;
     }
 
-    virtual void draw(int cameraX, int cameraY) {};
+    void draw(Position cameraPosition) {
+        int drawPositionX = this->position.x - cameraPosition.x;
+        int drawPositionY = this->position.y - cameraPosition.y;
+
+        this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
+    }
 };

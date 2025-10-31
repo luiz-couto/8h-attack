@@ -27,7 +27,6 @@ class Character : public RigidBody {
 
     std::string name;
     Rotation rotationImages;
-    GamesEngineeringBase::Image *current;
     char lastKeyPressed = 'S';
     int frameCount = 0;
     int loadingFrame = 0;
@@ -44,7 +43,7 @@ class Character : public RigidBody {
         loadAnimationFrames(rotationImages.east, "east");
 
         this->rotationImages = rotationImages;
-        this->current = this->rotationImages.south[0];
+        this->currentFrame = this->rotationImages.south[0];
     }
 
     void loadAnimationFrames(GamesEngineeringBase::Image *group[5], std::string direction) {
@@ -71,7 +70,7 @@ class Character : public RigidBody {
         }
 
         this->lastKeyPressed = keyPressed;
-        this->current = group[this->frameCount];
+        this->currentFrame = group[this->frameCount];
         this->loadingFrame = 0;
     }
 
@@ -102,26 +101,19 @@ class Character : public RigidBody {
             this->frameCount = 0;
             switch (this->lastKeyPressed) {
                 case 'A':
-                    this->current = this->rotationImages.west[this->frameCount];
+                    this->currentFrame = this->rotationImages.west[this->frameCount];
                     break;
                 case 'D':
-                    this->current = this->rotationImages.east[this->frameCount];
+                    this->currentFrame = this->rotationImages.east[this->frameCount];
                     break;
                 case 'W':
-                    this->current = this->rotationImages.north[this->frameCount];
+                    this->currentFrame = this->rotationImages.north[this->frameCount];
                     break;
                 case 'S':
-                    this->current = this->rotationImages.south[this->frameCount];
+                    this->currentFrame = this->rotationImages.south[this->frameCount];
                     break;
             }
             this->timeElapsed = 0.0f;
         }
-    }
-
-    void draw(Position cameraPosition) {
-        this->screenPosition.x = this->position.x - cameraPosition.x;
-        this->screenPosition.y = this->position.y - cameraPosition.y;
-
-        this->gameImage->drawImage(this->current, this->screenPosition.x, this->screenPosition.y);
     }
 };

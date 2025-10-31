@@ -25,7 +25,7 @@ class Manager {
         this->camera = new Camera(this->player->getPosition());
 
         this->terrain = new Terrain(canvas);
-        this->terrain->loadTerrain("assets/terrains/4.terrain");
+        this->terrain->loadTerrain("assets/terrains/1.terrain");
 
         for (int i=0; i<NPCS_NUMBER; i++) {
             NPC *flames = new NPC(canvas, "flames", WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
@@ -43,6 +43,13 @@ class Manager {
         // update NPCs
         for (int i=0; i<NPCS_NUMBER; i++) {
             this->npcs[i]->update(&playerPos);
+        }
+
+        // check collisions
+        for (int i=0; i<NPCS_NUMBER; i++) {
+            if (this->player->detectCollision(this->npcs[i])) {
+                Debug::log("Collision detected between player and NPC " + std::to_string(i));
+            }
         }
     }
 

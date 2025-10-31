@@ -38,6 +38,8 @@ class NPC : public RigidBody {
             this->timeElapsed = 0.0f;
         }
 
+        this->currentFrame = this->frames[this->frameCount];
+
         int dx = playerPos->x - this->position.x;
         int dy = playerPos->y - this->position.y;
 
@@ -51,12 +53,5 @@ class NPC : public RigidBody {
             this->position.y += floor(unitY * this->speed);
             return;
         }
-    }
-
-    void draw(Position cameraPosition) {
-        int screenPositionX = this->position.x - cameraPosition.x;
-        int screenPositionY = this->position.y - cameraPosition.y;
-
-        this->gameImage->drawImage(this->frames[this->frameCount], screenPositionX, screenPositionY);
     }
 };
