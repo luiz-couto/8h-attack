@@ -4,16 +4,20 @@
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
 #include "Terrain.h"
-#include "Character.h"
+#include "Player.h"
 #include "NPC.h"
 
-#define NPCS_NUMBER 1
 #define PLAYER_NAME "caz"
+#define PLAYER_START_SPEED 7
+#define PLAYER_START_HEALTH 100
+#define PLAYER_START_DAMAGE 1
+
+#define NPCS_NUMBER 1
 
 class Manager {
     private:
     GamesEngineeringBase::Window *canvas;
-    Character *player;
+    Player *player;
     Camera *camera;
     Terrain *terrain;
     NPC *npcs[NPCS_NUMBER];
@@ -21,14 +25,22 @@ class Manager {
     public:
     Manager(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
-        this->player = new Character(canvas, PLAYER_NAME, 100, canvas->getWidth() / 2, canvas->getHeight() / 2);
+        this->player = new Player(
+            canvas,
+            PLAYER_NAME,
+            PLAYER_START_SPEED, 
+            PLAYER_START_HEALTH, 
+            PLAYER_START_DAMAGE, 
+            canvas->getWidth() / 2, 
+            canvas->getHeight() / 2
+        );
         this->camera = new Camera(this->player->getPosition());
 
         this->terrain = new Terrain(canvas);
         this->terrain->loadTerrain("assets/terrains/1.terrain");
 
         for (int i=0; i<NPCS_NUMBER; i++) {
-            NPC *flames = new NPC(canvas, "flames", WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
+            NPC *flames = new NPC(canvas, "flames", 2, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
             this->npcs[i] = flames;
         }
     }

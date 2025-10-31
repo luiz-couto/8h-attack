@@ -3,21 +3,19 @@
 #include "Position.h"
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
-#include "RigidBody.h"
+#include "Character.h"
 
 #define START_SPEED 2
 #define TIME_BETWEEN_FRAMES 0.25f
 
-class NPC : public RigidBody {
+class NPC : public Character {
     private:
-    std::string name;
     GamesEngineeringBase::Image *frames[3];
     int frameCount = 0;
-    int speed = START_SPEED;
 
     public:
-    int damage = 1;
-    NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) : RigidBody(canvas, x, y) {
+    NPC(GamesEngineeringBase::Window* canvas, std::string name, int speed, int health, int damage, int x, int y)
+        : Character(canvas, name, speed, health, damage, x, y) {
         this->name = name;
         loadFrames();
     }

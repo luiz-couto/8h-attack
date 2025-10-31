@@ -130,6 +130,7 @@
     <ClInclude Include="GamesEngineeringBase.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="NPC.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Terrain.h" />
