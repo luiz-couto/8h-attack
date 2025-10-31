@@ -29,6 +29,7 @@ class Character : public RigidBody {
     Position screenPosition;
     int velocity = CHARACTER_START_VELOCITY;
     int health = 100;
+    bool hadDamage = false;
 
     std::string name;
     Rotation rotationImages;
@@ -130,6 +131,7 @@ class Character : public RigidBody {
                 if (this->health > 0) {
                     this->health -= npc->damage;
                 }
+                this->hadDamage = true;
                 break;
             }
             case OBJECT_COLLISION:
@@ -145,7 +147,12 @@ class Character : public RigidBody {
         int drawPositionX = this->position.x - cameraPosition.x;
         int drawPositionY = this->position.y - cameraPosition.y;
 
-        this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
+        int brightness = this->hadDamage ? 70 : 0;
+        if (this->hadDamage) {
+            this->hadDamage = false;
+        }
+
+        this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY, brightness);
         drawHealthBar(cameraPosition);
     }
 

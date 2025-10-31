@@ -13,7 +13,7 @@ class GameImage {
         this->canvas = canvas;
     }
 
-    void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY, bool drawBorders = false) {
+    void drawImage(GamesEngineeringBase::Image *image, int positionX, int positionY, int brigthness = 0, bool drawBorders = false) {
         for (int i=0; i < image->width; i++) {
             for (int j=0; j < image->height; j++) {
                 if (i + positionX < 0 || i + positionX >= canvas->getWidth() ||
@@ -21,7 +21,10 @@ class GameImage {
                     continue;
                 }
                 if (image->alphaAt(i, j) > 0) {
-                    canvas->draw(i + positionX, j + positionY, image->at(i, j));
+                    int r = min(255, image->at(i, j, 0) + brigthness);
+                    int g = min(255, image->at(i, j, 1) + brigthness);
+                    int b = min(255, image->at(i, j, 2) + brigthness);
+                    canvas->draw(i + positionX, j + positionY, r, g, b);
                     continue;
                 }
                 if (drawBorders) {

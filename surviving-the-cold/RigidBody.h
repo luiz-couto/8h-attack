@@ -5,7 +5,7 @@
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
 
-#define COLLISION_THRESHOLD 2
+#define COLLISION_THRESHOLD 10
 
 enum COLLISION_KIND {
     NPC_COLLISION,
