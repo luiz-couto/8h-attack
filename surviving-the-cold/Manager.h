@@ -34,7 +34,6 @@ class Manager {
     }
 
     void update() {
-        this->player->reactToMovementKeys(this->terrain->width * TILE_SIZE, this->terrain->height * TILE_SIZE);
         Position playerPos = this->player->getPosition();
 
         // update camera
@@ -51,6 +50,8 @@ class Manager {
                 this->player->processCollision(NPC_COLLISION);
             }
         }
+
+        this->player->reactToMovementKeys(this->terrain->width * TILE_SIZE, this->terrain->height * TILE_SIZE);
     }
 
     void draw() {
