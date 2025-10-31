@@ -16,6 +16,7 @@ class NPC : public RigidBody {
     int speed = START_SPEED;
 
     public:
+    int damage = 1;
     NPC(GamesEngineeringBase::Window* canvas, std::string name, int x, int y) : RigidBody(canvas, x, y) {
         this->name = name;
         loadFrames();
@@ -55,7 +56,7 @@ class NPC : public RigidBody {
         }
     }
 
-    void processCollision(COLLISION_KIND kind) override {
+    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) override {
         // For now, NPCs do not react to collisions
     }
 };

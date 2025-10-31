@@ -70,5 +70,5 @@ class RigidBody {
         this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
     }
 
-    virtual void processCollision(COLLISION_KIND kind) = 0;
+    virtual void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) = 0;
 };

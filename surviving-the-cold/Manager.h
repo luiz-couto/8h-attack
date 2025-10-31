@@ -21,7 +21,7 @@ class Manager {
     public:
     Manager(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
-        this->player = new Character(canvas, PLAYER_NAME, canvas->getWidth() / 2, canvas->getHeight() / 2);
+        this->player = new Character(canvas, PLAYER_NAME, 100, canvas->getWidth() / 2, canvas->getHeight() / 2);
         this->camera = new Camera(this->player->getPosition());
 
         this->terrain = new Terrain(canvas);
@@ -47,7 +47,7 @@ class Manager {
         // check collisions
         for (int i=0; i<NPCS_NUMBER; i++) {
             if (this->player->detectCollision(this->npcs[i])) {
-                this->player->processCollision(NPC_COLLISION);
+                this->player->processCollision(NPC_COLLISION, this->npcs[i]);
             }
         }
 
