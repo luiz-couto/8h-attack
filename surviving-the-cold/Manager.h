@@ -48,7 +48,7 @@ class Manager {
         // check collisions
         for (int i=0; i<NPCS_NUMBER; i++) {
             if (this->player->detectCollision(this->npcs[i])) {
-                Debug::log("Collision detected between player and NPC " + std::to_string(i));
+                this->player->processCollision(NPC_COLLISION);
             }
         }
     }

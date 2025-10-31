@@ -116,4 +116,18 @@ class Character : public RigidBody {
             this->timeElapsed = 0.0f;
         }
     }
+
+    void processCollision(COLLISION_KIND kind) override {
+        switch (kind) {
+            case NPC_COLLISION:
+                Debug::log("Character collided with NPC");
+                break;
+            case OBJECT_COLLISION:
+                Debug::log("Character collided with Object");
+                break;
+            case TERRAIN_COLLISION:
+                Debug::log("Character collided with Terrain");
+                break;
+        }
+    }
 };

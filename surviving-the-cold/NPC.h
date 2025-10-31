@@ -54,4 +54,8 @@ class NPC : public RigidBody {
             return;
         }
     }
+
+    void processCollision(COLLISION_KIND kind) override {
+        // For now, NPCs do not react to collisions
+    }
 };

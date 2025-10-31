@@ -7,6 +7,13 @@
 
 #define COLLISION_THRESHOLD 2
 
+enum COLLISION_KIND {
+    NPC_COLLISION,
+    PLAYER_COLLISION,
+    OBJECT_COLLISION,
+    TERRAIN_COLLISION
+};
+
 class RigidBody {
     protected:
     GamesEngineeringBase::Window* canvas;
@@ -62,4 +69,6 @@ class RigidBody {
 
         this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
     }
+
+    virtual void processCollision(COLLISION_KIND kind) = 0;
 };
