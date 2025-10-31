@@ -47,6 +47,10 @@ class Character : public RigidBody {
         // Draw background (red)
         for (int i=0; i<HEALTH_BAR_WIDTH; i++) {
             for (int j=0; j<HEALTH_BAR_HEIGHT; j++) {
+                if (barX + i < 0 || barX + i >= this->canvas->getWidth() ||
+                    barY + j < 0 || barY + j >= this->canvas->getHeight()) {
+                    continue;
+                }
                 this->canvas->draw(barX + i, barY + j, 255, 0, 0);
             }
         }
@@ -55,6 +59,10 @@ class Character : public RigidBody {
         int healthWidth = static_cast<int>((this->health / 100.0f) * HEALTH_BAR_WIDTH);
         for (int i=0; i<healthWidth; i++) {
             for (int j=0; j<HEALTH_BAR_HEIGHT; j++) {
+                if (barX + i < 0 || barX + i >= this->canvas->getWidth() ||
+                    barY + j < 0 || barY + j >= this->canvas->getHeight()) {
+                    continue;
+                }
                 this->canvas->draw(barX + i, barY + j, 0, 255, 0);
             }
         }
