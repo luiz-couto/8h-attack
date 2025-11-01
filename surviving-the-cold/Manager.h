@@ -12,7 +12,7 @@
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 1
 
-#define NPCS_NUMBER 1
+#define NPCS_NUMBER 3
 
 class Manager {
     private:
@@ -37,7 +37,7 @@ class Manager {
         this->camera = new Camera(this->player->getPosition());
 
         this->terrain = new Terrain(canvas);
-        this->terrain->loadTerrain("assets/terrains/1.terrain");
+        this->terrain->loadTerrain("assets/terrains/3.terrain");
 
         for (int i=0; i<NPCS_NUMBER; i++) {
             NPC *flames = new NPC(canvas, "flames", 2, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
