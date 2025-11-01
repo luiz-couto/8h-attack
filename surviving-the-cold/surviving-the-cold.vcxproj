@@ -129,6 +129,7 @@
     <ClInclude Include="GameImage.h" />
     <ClInclude Include="GamesEngineeringBase.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />

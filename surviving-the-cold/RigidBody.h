@@ -35,6 +35,18 @@ class RigidBody {
         this->position = pos;
     }
 
+    RigidBody(GamesEngineeringBase::Window* canvas, int x, int y, GamesEngineeringBase::Image *currentFrame) {
+        this->canvas = canvas;
+        this->gameImage = new GameImage(canvas);
+
+        Position pos;
+        pos.x = x;
+        pos.y = y;
+        this->position = pos;
+
+        this->currentFrame = currentFrame;
+    }
+
     Position getPosition() {
         return this->position;
     }
@@ -70,5 +82,5 @@ class RigidBody {
         this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
     }
 
-    virtual void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) = 0;
+    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {};
 };

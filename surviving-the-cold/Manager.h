@@ -6,6 +6,7 @@
 #include "Terrain.h"
 #include "Player.h"
 #include "NPC.h"
+#include "Map.h"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
@@ -19,7 +20,7 @@ class Manager {
     GamesEngineeringBase::Window *canvas;
     Player *player;
     Camera *camera;
-    Terrain *terrain;
+    Map *map;
     NPC *npcs[NPCS_NUMBER];
 
     public:
@@ -36,8 +37,10 @@ class Manager {
         );
         this->camera = new Camera(this->player->getPosition());
 
-        this->terrain = new Terrain(canvas);
-        this->terrain->loadTerrain("assets/terrains/3.terrain");
+        Terrain *terrain = new Terrain(canvas);
+        terrain->loadTerrain("assets/terrains/3.terrain");
+
+        this->map = new Map(this->canvas, terrain);
 
         for (int i=0; i<NPCS_NUMBER; i++) {
             NPC *flames = new NPC(canvas, "flames", 2, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
@@ -49,7 +52,7 @@ class Manager {
         Position playerPos = this->player->getPosition();
 
         // update camera
-        this->camera->update(playerPos, this->terrain->width, this->terrain->height);
+        this->camera->update(playerPos, this->map->getWidth(), this->map->getHeight());
 
         // update NPCs
         for (int i=0; i<NPCS_NUMBER; i++) {
@@ -63,13 +66,13 @@ class Manager {
             }
         }
 
-        this->player->reactToMovementKeys(this->terrain->width * TILE_SIZE, this->terrain->height * TILE_SIZE);
+        this->player->reactToMovementKeys(this->map->getWidth() * TILE_SIZE, this->map->getHeight() * TILE_SIZE);
     }
 
     void draw() {
         Position cameraPosition = this->camera->getPosition();
 
-        this->terrain->drawTerrain(cameraPosition);
+        this->map->draw(cameraPosition);
         this->player->draw(cameraPosition);
 
         for (int i=0; i<NPCS_NUMBER; i++) {

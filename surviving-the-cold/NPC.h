@@ -54,7 +54,7 @@ class NPC : public Character {
         }
     }
 
-    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) override {
+    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {
         // For now, NPCs do not react to collisions
     }
 };

@@ -1,0 +1,49 @@
+#pragma once
+#include "GamesEngineeringBase.h"
+#include "Position.h"
+#include "RigidBody.h"
+#include "Terrain.h"
+
+#define NUMBER_OF_OBJECTS 1
+
+class Map {
+    private:
+    GamesEngineeringBase::Window *canvas;
+    Terrain *terrain;
+    RigidBody **objects;
+    int numberOfObjects = NUMBER_OF_OBJECTS;
+
+    public:
+    Map(GamesEngineeringBase::Window *canvas, Terrain *terrain) {
+        this->canvas = canvas;
+        this->terrain = terrain;
+        this->objects = new RigidBody*[this->numberOfObjects];
+
+        for (int i=0; i<this->numberOfObjects; i++) {
+            GamesEngineeringBase::Image *objectImage = new GamesEngineeringBase::Image();
+            objectImage->load("assets/objects/0.png");
+            this->objects[i] = new RigidBody(this->canvas, 100, 100, objectImage);
+        }
+    }
+
+    int getWidth() {
+        return this->terrain->width;
+    }
+
+    int getHeight() {
+        return this->terrain->height;
+    }
+
+    RigidBody** getObjects() {
+        return this->objects;
+    }
+
+    void draw(Position cameraPosition) {
+        this->terrain->drawTerrain(cameraPosition);
+
+        for (int i=0; i<this->numberOfObjects; i++) {
+            //std::cout << "Drawing object " << i << std::endl;
+            this->objects[i]->draw(cameraPosition);
+        }
+    }
+};

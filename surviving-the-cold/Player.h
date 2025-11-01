@@ -113,7 +113,7 @@ class Player : public Character {
         }
     }
 
-    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) override {
+    void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {
         switch (kind) {
             case NPC_COLLISION: {
                 NPC *npc = static_cast<NPC*>(rigidBody);
