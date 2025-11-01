@@ -28,7 +28,6 @@ class GameImage {
                     continue;
                 }
                 if (drawBorders) {
-                    // Draw border pixel
                     if (i == 0 || j == 0 || i == image->width - 1 || j == image->height - 1) {
                         canvas->draw(i + positionX, j + positionY, 255,0,0); // red border
                     }
