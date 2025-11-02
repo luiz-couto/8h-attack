@@ -13,7 +13,7 @@
 
 #define TILE_SIZE 32
 #define NUMBER_OF_TILES 10
-#define IMPASSABLE_TILES_COUNT 1
+#define IMPASSABLE_TILES_COUNT 2
 
 enum TileKind {
     FULL_GRASS,
@@ -25,7 +25,7 @@ std::string getTileFile(int tileKind) {
     return "assets/tiles/" + std::to_string(tileKind) + ".png";
 }
 
-int IMPASSABLE_TILES[IMPASSABLE_TILES_COUNT] = {2}; // Water
+int IMPASSABLE_TILES[IMPASSABLE_TILES_COUNT] = {2,3}; // Water
 
 class ImpassableTile {
     private:
