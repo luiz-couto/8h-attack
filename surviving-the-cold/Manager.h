@@ -36,7 +36,7 @@ class Manager {
             canvas->getHeight() / 2
         );
         this->camera = new Camera(this->player->getPosition());
-        this->map = new Map(this->canvas, "3");
+        this->map = new Map(this->canvas, "4");
 
         for (int i=0; i<NPCS_NUMBER; i++) {
             NPC *flames = new NPC(canvas, "flames", 2, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
