@@ -14,8 +14,12 @@ class Map {
     
     public:
     int numberOfObjects = NUMBER_OF_OBJECTS;
-    Map(GamesEngineeringBase::Window *canvas, Terrain *terrain) {
+    Map(GamesEngineeringBase::Window *canvas, std::string mapNumber) {
         this->canvas = canvas;
+
+        Terrain *terrain = new Terrain(canvas);
+        terrain->loadTerrain("assets/terrains/" + mapNumber + ".terrain");
+
         this->terrain = terrain;
         this->objects = new RigidBody*[this->numberOfObjects];
 
