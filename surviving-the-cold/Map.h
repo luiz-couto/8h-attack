@@ -1,4 +1,6 @@
 #pragma once
+#include <fstream>
+#include <sstream>
 #include "GamesEngineeringBase.h"
 #include "Position.h"
 #include "RigidBody.h"
@@ -13,7 +15,7 @@ class Map {
     RigidBody **objects;
     
     public:
-    int numberOfObjects = NUMBER_OF_OBJECTS;
+    int numberOfObjects = 0;
     Map(GamesEngineeringBase::Window *canvas, std::string mapNumber) {
         this->canvas = canvas;
 
@@ -21,12 +23,30 @@ class Map {
         terrain->loadTerrain("assets/terrains/" + mapNumber + ".terrain");
 
         this->terrain = terrain;
+        this->loadMapObjects(mapNumber);
+    }
+
+    void loadMapObjects(std::string mapNumber) {
+        std::ifstream infile("assets/map-objects/" + mapNumber + ".objects");
+        std::string line;
+
+        std::getline(infile, line);
+        std::istringstream stringStream(line);
+
+        stringStream >> this->numberOfObjects;
         this->objects = new RigidBody*[this->numberOfObjects];
 
-        for (int i=0; i<this->numberOfObjects; i++) {
+        for (int j=0; j<this->numberOfObjects; j++)
+        {
+            std::getline(infile, line);
+            std::istringstream stringStream(line);
+
+            std::string object, positionX, positionY;
+            stringStream >> object >> positionX >> positionY;
+
             GamesEngineeringBase::Image *objectImage = new GamesEngineeringBase::Image();
-            objectImage->load("assets/objects/0.png");
-            this->objects[i] = new RigidBody(this->canvas, 100, 100, objectImage);
+            objectImage->load("assets/objects/" + object + ".png");
+            this->objects[j] = new RigidBody(this->canvas, std::stoi(positionX), std::stoi(positionY), objectImage);
         }
     }
 
