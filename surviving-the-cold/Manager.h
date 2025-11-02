@@ -13,7 +13,7 @@
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 1
 
-#define NPCS_NUMBER 3
+#define NPCS_NUMBER 1
 
 class Manager {
     private:
@@ -50,16 +50,17 @@ class Manager {
 
     void update() {
         Position playerPos = this->player->getPosition();
-
+        RigidBody **mapObjects = this->map->getObjects();
+        
         // update camera
         this->camera->update(playerPos, this->map->getWidth(), this->map->getHeight());
-
+        
         // update NPCs
         for (int i=0; i<NPCS_NUMBER; i++) {
             this->npcs[i]->update(&playerPos);
         }
-
-        // check collisions
+        
+        // check collisions with NPCs
         for (int i=0; i<NPCS_NUMBER; i++) {
             if (this->player->detectCollision(this->npcs[i])) {
                 this->player->processCollision(NPC_COLLISION, this->npcs[i]);
@@ -67,6 +68,18 @@ class Manager {
         }
 
         this->player->reactToMovementKeys(this->map->getWidth() * TILE_SIZE, this->map->getHeight() * TILE_SIZE);
+        
+        // check collisions with map objects
+        for (int i=0; i<this->map->numberOfObjects; i++) {
+            if (this->player->detectCollision(mapObjects[i])) {
+                this->player->processCollision(OBJECT_COLLISION, mapObjects[i]);
+                break;
+            }
+        }
+
+        // final player update
+        this->player->update();
+
     }
 
     void draw() {

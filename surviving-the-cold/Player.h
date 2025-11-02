@@ -9,8 +9,6 @@
 #include "NPC.h"
 #include "Character.h"
 
-#define CHARACTER_WIDTH 96
-#define CHARACTER_HEIGHT 96
 #define LOADING_FRAME 4
 #define IDLE_FRAME_TIME 0.3f
 
@@ -27,6 +25,7 @@ class Player : public Character {
     char lastKeyPressed = 'S';
     int frameCount = 0;
     int loadingFrame = 0;
+    Position lastPosition;
 
     public:
     Player(GamesEngineeringBase::Window *canvas, std::string name, int speed, int health, int damage, int x, int y)
@@ -40,6 +39,7 @@ class Player : public Character {
 
         this->rotationImages = rotationImages;
         this->currentFrame = this->rotationImages.south[0];
+        this->lastPosition = this->position;
     }
 
     void loadAnimationFrames(GamesEngineeringBase::Image *group[5], std::string direction) {
@@ -70,6 +70,10 @@ class Player : public Character {
         this->loadingFrame = 0;
     }
 
+    void setPositionAsLastPosition() {
+        this->position = this->lastPosition;
+    }
+
     void reactToMovementKeys(int boundaryWidth, int boundaryHeight) {
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->speed, 0);
@@ -77,7 +81,7 @@ class Player : public Character {
             return;
         }
         if (this->canvas->keyPressed('D')) {
-            this->position.x = min(this->position.x + this->speed, boundaryWidth - CHARACTER_WIDTH);
+            this->position.x = min(this->position.x + this->speed, boundaryWidth - this->currentFrame->width);
             selectNextFrame('D', this->rotationImages.east);
             return;
         }
@@ -87,7 +91,7 @@ class Player : public Character {
             return;
         }
         if (this->canvas->keyPressed('S')) {
-            this->position.y = min(this->position.y + this->speed, boundaryHeight - CHARACTER_HEIGHT);
+            this->position.y = min(this->position.y + this->speed, boundaryHeight - this->currentFrame->height);
             selectNextFrame('S', this->rotationImages.south);
             return;
         }
@@ -124,11 +128,15 @@ class Player : public Character {
                 break;
             }
             case OBJECT_COLLISION:
-                Debug::log("Character collided with Object");
+                this->setPositionAsLastPosition();
                 break;
             case TERRAIN_COLLISION:
                 Debug::log("Character collided with Terrain");
                 break;
         }
+    }
+
+    void update() {
+        this->lastPosition = this->position;
     }
 };

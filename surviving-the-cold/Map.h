@@ -11,9 +11,9 @@ class Map {
     GamesEngineeringBase::Window *canvas;
     Terrain *terrain;
     RigidBody **objects;
-    int numberOfObjects = NUMBER_OF_OBJECTS;
-
+    
     public:
+    int numberOfObjects = NUMBER_OF_OBJECTS;
     Map(GamesEngineeringBase::Window *canvas, Terrain *terrain) {
         this->canvas = canvas;
         this->terrain = terrain;
@@ -42,7 +42,6 @@ class Map {
         this->terrain->drawTerrain(cameraPosition);
 
         for (int i=0; i<this->numberOfObjects; i++) {
-            //std::cout << "Drawing object " << i << std::endl;
             this->objects[i]->draw(cameraPosition);
         }
     }
