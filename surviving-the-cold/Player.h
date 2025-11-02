@@ -131,7 +131,7 @@ class Player : public Character {
                 this->setPositionAsLastPosition();
                 break;
             case TERRAIN_COLLISION:
-                Debug::log("Character collided with Terrain");
+                this->setPositionAsLastPosition();
                 break;
         }
     }

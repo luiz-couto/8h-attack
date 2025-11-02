@@ -59,6 +59,14 @@ class RigidBody {
         return this->currentFrame->height - COLLISION_THRESHOLD;
     }
 
+    int getWidth() {
+        return this->currentFrame->width;
+    }
+
+    int getHeight() {
+        return this->currentFrame->height;
+    }
+
     bool detectCollision(RigidBody *rigidBody) {
         Position rigidBodyPos = rigidBody->getPosition();
         if(this->position.x < rigidBodyPos.x + rigidBody->getCollisionWidth() &&

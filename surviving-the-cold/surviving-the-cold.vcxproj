@@ -135,6 +135,7 @@
     <ClInclude Include="Position.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

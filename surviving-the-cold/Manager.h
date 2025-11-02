@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "NPC.h"
 #include "Map.h"
+#include "Vector.h"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
@@ -69,6 +70,17 @@ class Manager {
         for (int i=0; i<this->map->numberOfObjects; i++) {
             if (this->player->detectCollision(mapObjects[i])) {
                 this->player->processCollision(OBJECT_COLLISION, mapObjects[i]);
+                break;
+            }
+        }
+
+        // check collisions with terrain impassable tiles
+        Terrain* terrain = this->map->getTerrain();
+        Vector<ImpassableTile*> impassableTiles = terrain->getImpassableTiles();
+        for (int i=0; i<impassableTiles.getSize(); i++) {
+            ImpassableTile* tile = impassableTiles[i];
+            if (tile->detectCollision(this->player)) {
+                this->player->processCollision(TERRAIN_COLLISION, nullptr);
                 break;
             }
         }

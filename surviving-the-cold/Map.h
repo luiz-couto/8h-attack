@@ -58,6 +58,10 @@ class Map {
         return this->terrain->height;
     }
 
+    Terrain* getTerrain() {
+        return this->terrain;
+    }
+
     RigidBody** getObjects() {
         return this->objects;
     }
