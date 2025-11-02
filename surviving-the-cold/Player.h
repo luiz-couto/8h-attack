@@ -9,7 +9,7 @@
 #include "NPC.h"
 #include "Character.h"
 
-#define LOADING_FRAME 4
+#define LOADING_FRAME 3
 #define IDLE_FRAME_TIME 0.3f
 
 struct Rotation {

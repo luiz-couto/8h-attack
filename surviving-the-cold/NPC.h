@@ -6,7 +6,7 @@
 #include "Character.h"
 
 #define START_SPEED 2
-#define TIME_BETWEEN_FRAMES 0.25f
+#define TIME_BETWEEN_FRAMES 0.20f
 
 class NPC : public Character {
     private:

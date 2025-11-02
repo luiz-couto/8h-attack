@@ -5,7 +5,7 @@
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
 
-#define COLLISION_THRESHOLD 10
+#define COLLISION_THRESHOLD 20
 
 enum COLLISION_KIND {
     NPC_COLLISION,
@@ -51,27 +51,23 @@ class RigidBody {
         return this->position;
     }
 
+    int getCollisionWidth() {
+        return this->currentFrame->width - COLLISION_THRESHOLD;
+    }
+
+    int getCollisionHeight() {
+        return this->currentFrame->height - COLLISION_THRESHOLD;
+    }
+
     bool detectCollision(RigidBody *rigidBody) {
-        // Rigid Body 1 properties
-        float radius1 = this->currentFrame->height / 2.0f;
-        float center1X = this->position.x + (this->currentFrame->width / 2.0f);
-        float center1Y = this->position.y + radius1;
-
-        // Rigid Body 2 properties
-        float radius2 = rigidBody->currentFrame->height / 2.0f;
-        float center2X = rigidBody->position.x + (rigidBody->currentFrame->width / 2.0f);
-        float center2Y = rigidBody->position.y + radius2;
-
-        // Calculate the distance between the two centers
-        float dx = center2X - center1X;
-        float dy = center2Y - center1Y;
-        float distanceBetweenCenters = sqrt(pow(dx, 2) + pow(dy, 2));
-
-        // Check for collision
-        if (distanceBetweenCenters <= (radius1 + radius2) - COLLISION_THRESHOLD) {
+        Position rigidBodyPos = rigidBody->getPosition();
+        if(this->position.x < rigidBodyPos.x + rigidBody->getCollisionWidth() &&
+            this->position.x + this->getCollisionWidth() > rigidBodyPos.x &&
+            this->position.y < rigidBodyPos.y + rigidBody->getCollisionHeight() &&
+            this->position.y + this->getCollisionHeight() > rigidBodyPos.y) 
+        {
             return true;
         }
-
         return false;
     }
 
