@@ -47,7 +47,6 @@ class Vector {
 
         T* newarray;
         this->maxSize *= 2;
-        std::cout << "Growing array to " << maxSize << std::endl;
 
         newarray = new T[maxSize]; // should check if there was enough space really
         memcpy(newarray, this->arr, size * sizeof(T));
