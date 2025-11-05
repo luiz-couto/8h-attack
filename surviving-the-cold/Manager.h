@@ -8,6 +8,7 @@
 #include "NPC.h"
 #include "Map.h"
 #include "Vector.h"
+#include "Random.h"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
@@ -39,8 +40,12 @@ class Manager {
         this->camera = new Camera(this->player->getPosition());
         this->map = new Map(this->canvas, "4");
 
+        RandomInt randomWidth(this->map->getWidthInPixels());
+        RandomInt randomHeight(this->map->getHeightInPixels());
+        RandomInt randomNPCSpeed(4);
+
         for (int i=0; i<NPCS_NUMBER; i++) {
-            NPC *flames = new NPC(canvas, "flames", 4, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
+            NPC *flames = new NPC(canvas, "flames", randomNPCSpeed.generate() + 1, 100, 1, randomWidth.generate(), randomHeight.generate());
             this->npcs[i] = flames;
         }
     }
