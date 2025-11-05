@@ -8,9 +8,13 @@
 #include "RigidBody.h"
 #include "NPC.h"
 #include "Character.h"
+#include "Projectile.h"
 
 #define LOADING_FRAME 3
 #define IDLE_FRAME_TIME 0.3f
+
+#define PROJECTILES_ARR_COUNT 100
+#define PROJECTILE_DEFAULT_COOLDOWN 0.2f
 
 struct Rotation {
     GamesEngineeringBase::Image *south[5];
@@ -27,6 +31,10 @@ class Player : public Character {
     int loadingFrame = 0;
     Position lastPosition;
 
+    Projectile *projectiles[PROJECTILES_ARR_COUNT];
+    float projectileCooldown = PROJECTILE_DEFAULT_COOLDOWN;
+    float cooldownTimeElapsed = 0.0f;
+
     public:
     Player(GamesEngineeringBase::Window *canvas, std::string name, int speed, int health, int damage, int x, int y)
         : Character(canvas, name, speed, health, damage, x, y) {
@@ -40,6 +48,50 @@ class Player : public Character {
         this->rotationImages = rotationImages;
         this->currentFrame = this->rotationImages.south[0];
         this->lastPosition = this->position;
+
+        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
+            this->projectiles[i] = nullptr;
+        }
+    }
+
+    void fireNextProjectile(int targetX, int targetY) {
+        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
+            if (this->projectiles[i] == nullptr) {
+                this->projectiles[i] = new Projectile(
+                    this->canvas,
+                    this->position.x,
+                    this->position.y,
+                    targetX,
+                    targetY
+                );
+                break;
+            }
+        }
+    }
+
+    void drawProjectiles(Position cameraPosition, int terrainWidth, int terrainHeight) {
+        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
+            if (this->projectiles[i] != nullptr) {
+                // check for out of bounds projectile
+                bool isOutOfBounds = this->projectiles[i]->isOutOfBounds(terrainWidth, terrainHeight);
+                if (isOutOfBounds) {
+                    delete this->projectiles[i];
+                    this->projectiles[i] = nullptr;
+                    continue;
+                }
+
+                this->projectiles[i]->draw(cameraPosition);
+            }
+        }
+    }
+
+    void deleteProjectile(int idx) {
+        delete this->projectiles[idx];
+        this->projectiles[idx] = nullptr;
+    }
+
+    Projectile** getProjectilesArray() {
+        return this->projectiles;
     }
 
     void loadAnimationFrames(GamesEngineeringBase::Image *group[5], std::string direction) {
@@ -74,7 +126,21 @@ class Player : public Character {
         this->position = this->lastPosition;
     }
 
-    void reactToMovementKeys(int boundaryWidth, int boundaryHeight) {
+    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC) {
+        float frameElapsedTime = this->timer.dt();
+
+        this->cooldownTimeElapsed += frameElapsedTime;
+        if (cooldownTimeElapsed > projectileCooldown) {
+            this->fireNextProjectile(nearestNPC->getCenterPosition().x, nearestNPC->getCenterPosition().y);
+            this->cooldownTimeElapsed = 0.0f;
+        }
+
+        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
+            if (this->projectiles[i] != nullptr) {
+                this->projectiles[i]->update();
+            }
+        }
+
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->speed, 0);
             selectNextFrame('A', this->rotationImages.west);
@@ -96,7 +162,7 @@ class Player : public Character {
             return;
         }
 
-        this->timeElapsed += this->timer.dt();
+        this->timeElapsed += frameElapsedTime;
         if (timeElapsed > IDLE_FRAME_TIME) {
             this->frameCount = 0;
             switch (this->lastKeyPressed) {

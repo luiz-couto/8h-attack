@@ -7,6 +7,7 @@
 #include "Terrain.h"
 
 #define NUMBER_OF_OBJECTS 1
+#define TILE_SIZE 32
 
 class Map {
     private:
@@ -50,12 +51,12 @@ class Map {
         }
     }
 
-    int getWidth() {
-        return this->terrain->width;
+    int getWidthInPixels() {
+        return this->terrain->width * TILE_SIZE;
     }
 
-    int getHeight() {
-        return this->terrain->height;
+    int getHeightInPixels() {
+        return this->terrain->height * TILE_SIZE;
     }
 
     Terrain* getTerrain() {

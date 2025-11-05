@@ -4,8 +4,9 @@
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
 #include "Character.h"
+#include "Projectile.h"
 
-#define START_SPEED 2
+#define START_SPEED 20
 #define TIME_BETWEEN_FRAMES 0.20f
 
 class NPC : public Character {
@@ -55,6 +56,13 @@ class NPC : public Character {
     }
 
     void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {
-        // For now, NPCs do not react to collisions
+        switch (kind) {
+            case PROJECTILE_COLLISION: {
+                Projectile *projectile = static_cast<Projectile*>(rigidBody);
+                this->health -= projectile->getDamage();
+            }
+            default:
+                return;
+        }
     }
 };

@@ -23,15 +23,13 @@ class Camera {
         return this->position;
     }
 
-    void update(Position playerPosition, int terrainWidth, int terrainHeight) {    
+    void update(Position playerPosition, int terrainPixelWidth, int terrainPixelHeight) {    
         int possibleX = playerPosition.x - OFFSET_X;
-        int terrainPixelWidth = terrainWidth * TILE_SIZE;
         if (possibleX >= 0 && (possibleX + WINDOW_WIDTH) <= terrainPixelWidth) {
             this->position.x = possibleX;
         }
 
         int possibleY = playerPosition.y - OFFSET_Y;
-        int terrainPixelHeight = terrainHeight * TILE_SIZE;
         if (possibleY >= 0 && (possibleY + WINDOW_HEIGHT) <= terrainPixelHeight) {
             this->position.y = possibleY;
         }
