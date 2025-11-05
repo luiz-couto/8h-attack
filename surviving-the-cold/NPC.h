@@ -59,7 +59,11 @@ class NPC : public Character {
         switch (kind) {
             case PROJECTILE_COLLISION: {
                 Projectile *projectile = static_cast<Projectile*>(rigidBody);
-                this->health -= projectile->getDamage();
+                if (this->health > 0) {
+                    this->health -= projectile->getDamage();
+                }
+                this->hadDamage = true;
+                break;
             }
             default:
                 return;
