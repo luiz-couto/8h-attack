@@ -9,6 +9,7 @@
 #include "NPC.h"
 #include "Character.h"
 #include "Projectile.h"
+#include "PDList.h"
 
 #define LOADING_FRAME 3
 #define IDLE_FRAME_TIME 0.3f
@@ -31,7 +32,7 @@ class Player : public Character {
     int loadingFrame = 0;
     Position lastPosition;
 
-    Projectile *projectiles[PROJECTILES_ARR_COUNT];
+    PDList<Projectile> *projectiles = new PDList<Projectile>();
     float projectileCooldown = PROJECTILE_DEFAULT_COOLDOWN;
     float cooldownTimeElapsed = 0.0f;
 
@@ -48,49 +49,30 @@ class Player : public Character {
         this->rotationImages = rotationImages;
         this->currentFrame = this->rotationImages.south[0];
         this->lastPosition = this->position;
-
-        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
-            this->projectiles[i] = nullptr;
-        }
     }
 
     void fireNextProjectile(int targetX, int targetY) {
-        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
-            if (this->projectiles[i] == nullptr) {
-                this->projectiles[i] = new Projectile(
-                    this->canvas,
-                    this->position.x,
-                    this->position.y,
-                    targetX,
-                    targetY
-                );
-                break;
-            }
-        }
+        this->projectiles->add(new Projectile(
+            this->canvas,
+            this->position.x,
+            this->position.y,
+            targetX,
+            targetY
+        ));
     }
 
     void drawProjectiles(Position cameraPosition, int terrainWidth, int terrainHeight) {
-        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
-            if (this->projectiles[i] != nullptr) {
-                // check for out of bounds projectile
-                bool isOutOfBounds = this->projectiles[i]->isOutOfBounds(terrainWidth, terrainHeight);
-                if (isOutOfBounds) {
-                    delete this->projectiles[i];
-                    this->projectiles[i] = nullptr;
-                    continue;
-                }
-
-                this->projectiles[i]->draw(cameraPosition);
+        PDList<Projectile> *projectiles = this->projectiles;
+        projectiles->forEach([&projectiles, &cameraPosition, &terrainWidth, &terrainHeight](Projectile &projectile, int idx) {
+            if (projectile.isOutOfBounds(terrainWidth, terrainHeight)) {
+                projectiles->deleteByIdx(idx);
+            } else {
+                projectile.draw(cameraPosition);
             }
-        }
+        });
     }
 
-    void deleteProjectile(int idx) {
-        delete this->projectiles[idx];
-        this->projectiles[idx] = nullptr;
-    }
-
-    Projectile** getProjectilesArray() {
+    PDList<Projectile>* getProjectilesArray() {
         return this->projectiles;
     }
 
@@ -137,11 +119,9 @@ class Player : public Character {
             }
         }
 
-        for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
-            if (this->projectiles[i] != nullptr) {
-                this->projectiles[i]->update();
-            }
-        }
+        this->projectiles->forEach([](Projectile &projectile, int idx) {
+            projectile.update();
+        });
 
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->speed, 0);

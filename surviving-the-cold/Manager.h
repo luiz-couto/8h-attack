@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Vector.h"
 #include "Random.h"
+#include "PDList.h"
 
 #define MAP_NUMBER "4"
 
@@ -106,14 +107,16 @@ class Manager {
             if (this->player->getDistanceTo(this->npcs[i]) < this->player->getDistanceTo(nearestNPC)) {
                 nearestNPC = this->npcs[i];
             }
+
             // check collisions between NPCs and player projectiles
-            Projectile **playerProjectiles = this->player->getProjectilesArray();
-            for (int j=0; j<PROJECTILES_ARR_COUNT; j++) {
-                if (playerProjectiles[j] != nullptr && this->npcs[i]->detectCollision(playerProjectiles[j])) {
-                    this->npcs[i]->processCollision(PROJECTILE_COLLISION, playerProjectiles[j]);
-                    this->player->deleteProjectile(j);
+            PDList<Projectile> *playerProjectiles = this->player->getProjectilesArray();
+            NPC *currentNPC = this->npcs[i];
+            playerProjectiles->forEach([&currentNPC, &playerProjectiles](Projectile &projectile, int j) {
+                if (currentNPC->detectCollision(&projectile)) {
+                    currentNPC->processCollision(PROJECTILE_COLLISION, &projectile);
+                    playerProjectiles->deleteByIdx(j);
                 }
-            }
+            });
         }
 
         this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC);

@@ -131,6 +131,7 @@
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="NPC.h" />
+    <ClInclude Include="PDList.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Projectile.h" />
