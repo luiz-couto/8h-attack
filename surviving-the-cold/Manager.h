@@ -8,13 +8,18 @@
 #include "NPC.h"
 #include "Map.h"
 #include "Vector.h"
+#include "Random.h"
+#include "PDList.h"
+
+#define MAP_NUMBER "4"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 1
 
-#define NPCS_NUMBER 1
+#define NPC_DEFAULT_COOLDOWN 0.5f
+#define NPCS_NUMBER 30
 
 class Manager {
     private:
@@ -22,7 +27,11 @@ class Manager {
     Player *player;
     Camera *camera;
     Map *map;
-    NPC *npcs[NPCS_NUMBER];
+    PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
+
+    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
+    float timeElapsedNPCs = 0.0f;
+    float npcCooldown = NPC_DEFAULT_COOLDOWN;
 
     public:
     Manager(GamesEngineeringBase::Window *canvas) {
@@ -37,34 +46,66 @@ class Manager {
             canvas->getHeight() / 2
         );
         this->camera = new Camera(this->player->getPosition());
-        this->map = new Map(this->canvas, "4");
-
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            NPC *flames = new NPC(canvas, "flames", 2, 100, 1, WINDOW_WIDTH/2 + ((i+1)*200), WINDOW_HEIGHT/2);
-            this->npcs[i] = flames;
-        }
+        this->map = new Map(this->canvas, MAP_NUMBER);
     }
 
     void update() {
+        float timeElapsed = this->timer.dt();
+
         Position playerPos = this->player->getPosition();
         RigidBody **mapObjects = this->map->getObjects();
         
         // update camera
-        this->camera->update(playerPos, this->map->getWidth(), this->map->getHeight());
-        
-        // update NPCs
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            this->npcs[i]->update(&playerPos);
-        }
-        
-        // check collisions with NPCs
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            if (this->player->detectCollision(this->npcs[i])) {
-                this->player->processCollision(NPC_COLLISION, this->npcs[i]);
-            }
+        this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
+
+        // generate new NPCs
+        this->timeElapsedNPCs += timeElapsed;
+        if (this->timeElapsedNPCs > this->npcCooldown) {
+            this->npcs->add(new NPC(
+                this->canvas,
+                "flames",
+                RandomInt(1, 4).generate(),
+                100,
+                1,
+                RandomInt(0, this->map->getWidthInPixels()).generate(),
+                RandomInt(0, this->map->getHeightInPixels()).generate()
+            ));
+            this->timeElapsedNPCs = 0.0f;
         }
 
-        this->player->reactToMovementKeys(this->map->getWidth() * TILE_SIZE, this->map->getHeight() * TILE_SIZE);
+        // update NPCs
+        PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
+        npcs->forEach([&playerPos, &npcs](NPC &npc, int idx) {
+            if (!npc.isAlive()) {
+                npcs->deleteByIdx(idx);
+            } else {
+                npc.update(&playerPos);
+            }
+        });
+        
+        NPC *nearestNPC = this->npcs->at(0);
+        if (nearestNPC != nullptr) {
+            Player *player = this->player;
+            npcs->forEach([&nearestNPC, &player](NPC &npc, int idx) {
+                if (player->detectCollision(&npc)) {
+                    player->processCollision(NPC_COLLISION, &npc);
+                }
+
+                if (player->getDistanceTo(&npc) < player->getDistanceTo(nearestNPC)) {
+                    nearestNPC = &npc;
+                }
+
+                PDList<Projectile> *playerProjectiles = player->getProjectilesArray();
+                playerProjectiles->forEach([&npc, &playerProjectiles](Projectile &projectile, int j) {
+                    if (npc.detectCollision(&projectile)) {
+                        npc.processCollision(PROJECTILE_COLLISION, &projectile);
+                        playerProjectiles->deleteByIdx(j);
+                    }
+                });
+            });
+        }
+
+        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC);
         
         // check collisions with map objects
         for (int i=0; i<this->map->numberOfObjects; i++) {
@@ -87,7 +128,6 @@ class Manager {
 
         // final player update
         this->player->update();
-
     }
 
     void draw() {
@@ -95,10 +135,11 @@ class Manager {
 
         this->map->draw(cameraPosition);
         this->player->draw(cameraPosition);
+        this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            this->npcs[i]->draw(cameraPosition);
-        }
+        this->npcs->forEach([&cameraPosition](NPC &npc, int idx) {
+            npc.draw(cameraPosition);
+        });
     }
 
 };

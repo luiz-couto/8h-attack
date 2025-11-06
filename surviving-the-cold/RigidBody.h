@@ -11,7 +11,8 @@ enum COLLISION_KIND {
     NPC_COLLISION,
     PLAYER_COLLISION,
     OBJECT_COLLISION,
-    TERRAIN_COLLISION
+    TERRAIN_COLLISION,
+    PROJECTILE_COLLISION
 };
 
 class RigidBody {
@@ -51,6 +52,13 @@ class RigidBody {
         return this->position;
     }
 
+    Position getCenterPosition() {
+        Position centerPos;
+        centerPos.x = this->position.x + this->getWidth() / 2;
+        centerPos.y = this->position.y + this->getHeight() / 2;
+        return centerPos;
+    }
+
     int getCollisionWidth() {
         return this->currentFrame->width - COLLISION_THRESHOLD;
     }
@@ -77,6 +85,14 @@ class RigidBody {
             return true;
         }
         return false;
+    }
+
+    float getDistanceTo(RigidBody *rigidBody) {
+        Position rigidBodyPos = rigidBody->getCenterPosition();
+        Position thisCenterPos = this->getCenterPosition();
+        float dx = thisCenterPos.x - rigidBodyPos.x;
+        float dy = thisCenterPos.y - rigidBodyPos.y;
+        return sqrt(dx * dx + dy * dy);
     }
 
     void draw(Position cameraPosition) {
