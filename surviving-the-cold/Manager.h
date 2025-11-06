@@ -10,12 +10,14 @@
 #include "Vector.h"
 #include "Random.h"
 
+#define MAP_NUMBER "4"
+
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 1
-#define NPC_DEFAULT_COOLDOWN 0.5f
 
+#define NPC_DEFAULT_COOLDOWN 0.5f
 #define NPCS_NUMBER 30
 
 class Manager {
@@ -43,14 +45,9 @@ class Manager {
             canvas->getHeight() / 2
         );
         this->camera = new Camera(this->player->getPosition());
-        this->map = new Map(this->canvas, "4");
-
-        RandomInt randomWidth(this->map->getWidthInPixels());
-        RandomInt randomHeight(this->map->getHeightInPixels());
-        RandomInt randomNPCSpeed(4);
+        this->map = new Map(this->canvas, MAP_NUMBER);
 
         for (int i=0; i<NPCS_NUMBER; i++) {
-            //NPC *flames = new NPC(canvas, "flames", randomNPCSpeed.generate() + 1, 100, 1, randomWidth.generate(), randomHeight.generate());
             this->npcs[i] = nullptr;
         }
     }
@@ -72,11 +69,11 @@ class Manager {
                     this->npcs[i] = new NPC(
                         this->canvas,
                         "flames",
-                        RandomInt(4).generate() + 1,
+                        RandomInt(1, 4).generate(),
                         100,
                         1,
-                        RandomInt(this->map->getWidthInPixels()).generate(),
-                        RandomInt(this->map->getHeightInPixels()).generate()
+                        RandomInt(0, this->map->getWidthInPixels()).generate(),
+                        RandomInt(0, this->map->getHeightInPixels()).generate()
                     );
                     break;
                 }
@@ -142,7 +139,6 @@ class Manager {
 
         // final player update
         this->player->update();
-
     }
 
     void draw() {

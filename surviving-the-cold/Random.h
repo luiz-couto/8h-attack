@@ -8,10 +8,10 @@ class RandomInt {
     std::mt19937 mt;
 
     public:
-    RandomInt(int maxValue) {
+    RandomInt(int minValue, int maxValue) {
         std::random_device rd;
         this->mt = std::mt19937(rd());
-        this->distribution = std::uniform_int_distribution<int>(0, maxValue);
+        this->distribution = std::uniform_int_distribution<int>(minValue, maxValue);
     }
 
     int generate() {
