@@ -62,6 +62,10 @@ class PDList {
         isIterating = false;
     }
 
+    T* at(unsigned int idx) {
+        return this->list[idx];
+    }
+
     ~PDList() {
         for (int i = 0; i < nextFreeIdx; i++) {
             delete list[i];

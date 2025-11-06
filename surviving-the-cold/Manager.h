@@ -27,7 +27,7 @@ class Manager {
     Player *player;
     Camera *camera;
     Map *map;
-    NPC *npcs[NPCS_NUMBER];
+    PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
 
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
     float timeElapsedNPCs = 0.0f;
@@ -47,10 +47,6 @@ class Manager {
         );
         this->camera = new Camera(this->player->getPosition());
         this->map = new Map(this->canvas, MAP_NUMBER);
-
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            this->npcs[i] = nullptr;
-        }
     }
 
     void update() {
@@ -65,57 +61,47 @@ class Manager {
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
         if (this->timeElapsedNPCs > this->npcCooldown) {
-            for (int i=0; i<NPCS_NUMBER; i++) {
-                if (this->npcs[i] == nullptr) {
-                    this->npcs[i] = new NPC(
-                        this->canvas,
-                        "flames",
-                        RandomInt(1, 4).generate(),
-                        100,
-                        1,
-                        RandomInt(0, this->map->getWidthInPixels()).generate(),
-                        RandomInt(0, this->map->getHeightInPixels()).generate()
-                    );
-                    break;
-                }
-            }
+            this->npcs->add(new NPC(
+                this->canvas,
+                "flames",
+                RandomInt(1, 4).generate(),
+                100,
+                1,
+                RandomInt(0, this->map->getWidthInPixels()).generate(),
+                RandomInt(0, this->map->getHeightInPixels()).generate()
+            ));
             this->timeElapsedNPCs = 0.0f;
         }
-        
-        // update NPCs
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            if (this->npcs[i] != nullptr) {
-                if (!this->npcs[i]->isAlive()) {
-                    delete this->npcs[i];
-                    this->npcs[i] = nullptr;
-                    continue;
-                }
-                this->npcs[i]->update(&playerPos);
-            }
-        }
-        
-        NPC *nearestNPC = this->npcs[0];
-        for (int i=1; i<NPCS_NUMBER; i++) {
-            if (this->npcs[i] == nullptr) {
-                continue;
-            }
-            // check collisions with NPCs
-            if (this->player->detectCollision(this->npcs[i])) {
-                this->player->processCollision(NPC_COLLISION, this->npcs[i]);
-            }
-            // find nearest NPC
-            if (this->player->getDistanceTo(this->npcs[i]) < this->player->getDistanceTo(nearestNPC)) {
-                nearestNPC = this->npcs[i];
-            }
 
-            // check collisions between NPCs and player projectiles
-            PDList<Projectile> *playerProjectiles = this->player->getProjectilesArray();
-            NPC *currentNPC = this->npcs[i];
-            playerProjectiles->forEach([&currentNPC, &playerProjectiles](Projectile &projectile, int j) {
-                if (currentNPC->detectCollision(&projectile)) {
-                    currentNPC->processCollision(PROJECTILE_COLLISION, &projectile);
-                    playerProjectiles->deleteByIdx(j);
+        // update NPCs
+        PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
+        npcs->forEach([&playerPos, &npcs](NPC &npc, int idx) {
+            if (!npc.isAlive()) {
+                npcs->deleteByIdx(idx);
+            } else {
+                npc.update(&playerPos);
+            }
+        });
+        
+        NPC *nearestNPC = this->npcs->at(0);
+        if (nearestNPC != nullptr) {
+            Player *player = this->player;
+            npcs->forEach([&nearestNPC, &player](NPC &npc, int idx) {
+                if (player->detectCollision(&npc)) {
+                    player->processCollision(NPC_COLLISION, &npc);
                 }
+
+                if (player->getDistanceTo(&npc) < player->getDistanceTo(nearestNPC)) {
+                    nearestNPC = &npc;
+                }
+
+                PDList<Projectile> *playerProjectiles = player->getProjectilesArray();
+                playerProjectiles->forEach([&npc, &playerProjectiles](Projectile &projectile, int j) {
+                    if (npc.detectCollision(&projectile)) {
+                        npc.processCollision(PROJECTILE_COLLISION, &projectile);
+                        playerProjectiles->deleteByIdx(j);
+                    }
+                });
             });
         }
 
@@ -151,12 +137,9 @@ class Manager {
         this->player->draw(cameraPosition);
         this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
-        for (int i=0; i<NPCS_NUMBER; i++) {
-            if (this->npcs[i] == nullptr) {
-                continue;
-            }
-            this->npcs[i]->draw(cameraPosition);
-        }
+        this->npcs->forEach([&cameraPosition](NPC &npc, int idx) {
+            npc.draw(cameraPosition);
+        });
     }
 
 };
