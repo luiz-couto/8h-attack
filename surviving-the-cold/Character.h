@@ -40,6 +40,10 @@ class Character : public RigidBody {
         drawHealthBar(cameraPosition);
     }
 
+    bool isAlive() {
+        return this->health > 0;
+    }
+
     void drawHealthBar(Position cameraPosition) {
         int barX = this->position.x - cameraPosition.x + (this->currentFrame->width / 2) - (HEALTH_BAR_WIDTH / 2);
         int barY = this->position.y - cameraPosition.y + (this->currentFrame->height);

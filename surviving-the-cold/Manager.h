@@ -14,8 +14,9 @@
 #define PLAYER_START_SPEED 7
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 1
+#define NPC_DEFAULT_COOLDOWN 0.5f
 
-#define NPCS_NUMBER 10
+#define NPCS_NUMBER 30
 
 class Manager {
     private:
@@ -24,6 +25,10 @@ class Manager {
     Camera *camera;
     Map *map;
     NPC *npcs[NPCS_NUMBER];
+
+    GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
+    float timeElapsedNPCs = 0.0f;
+    float npcCooldown = NPC_DEFAULT_COOLDOWN;
 
     public:
     Manager(GamesEngineeringBase::Window *canvas) {
@@ -45,25 +50,57 @@ class Manager {
         RandomInt randomNPCSpeed(4);
 
         for (int i=0; i<NPCS_NUMBER; i++) {
-            NPC *flames = new NPC(canvas, "flames", randomNPCSpeed.generate() + 1, 100, 1, randomWidth.generate(), randomHeight.generate());
-            this->npcs[i] = flames;
+            //NPC *flames = new NPC(canvas, "flames", randomNPCSpeed.generate() + 1, 100, 1, randomWidth.generate(), randomHeight.generate());
+            this->npcs[i] = nullptr;
         }
     }
 
     void update() {
+        float timeElapsed = this->timer.dt();
+
         Position playerPos = this->player->getPosition();
         RigidBody **mapObjects = this->map->getObjects();
         
         // update camera
         this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
+
+        // generate new NPCs
+        this->timeElapsedNPCs += timeElapsed;
+        if (this->timeElapsedNPCs > this->npcCooldown) {
+            for (int i=0; i<NPCS_NUMBER; i++) {
+                if (this->npcs[i] == nullptr) {
+                    this->npcs[i] = new NPC(
+                        this->canvas,
+                        "flames",
+                        RandomInt(4).generate() + 1,
+                        100,
+                        1,
+                        RandomInt(this->map->getWidthInPixels()).generate(),
+                        RandomInt(this->map->getHeightInPixels()).generate()
+                    );
+                    break;
+                }
+            }
+            this->timeElapsedNPCs = 0.0f;
+        }
         
         // update NPCs
         for (int i=0; i<NPCS_NUMBER; i++) {
-            this->npcs[i]->update(&playerPos);
+            if (this->npcs[i] != nullptr) {
+                if (!this->npcs[i]->isAlive()) {
+                    delete this->npcs[i];
+                    this->npcs[i] = nullptr;
+                    continue;
+                }
+                this->npcs[i]->update(&playerPos);
+            }
         }
         
         NPC *nearestNPC = this->npcs[0];
-        for (int i=0; i<NPCS_NUMBER; i++) {
+        for (int i=1; i<NPCS_NUMBER; i++) {
+            if (this->npcs[i] == nullptr) {
+                continue;
+            }
             // check collisions with NPCs
             if (this->player->detectCollision(this->npcs[i])) {
                 this->player->processCollision(NPC_COLLISION, this->npcs[i]);
@@ -116,6 +153,9 @@ class Manager {
         this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
         for (int i=0; i<NPCS_NUMBER; i++) {
+            if (this->npcs[i] == nullptr) {
+                continue;
+            }
             this->npcs[i]->draw(cameraPosition);
         }
     }

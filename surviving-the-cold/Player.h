@@ -131,8 +131,10 @@ class Player : public Character {
 
         this->cooldownTimeElapsed += frameElapsedTime;
         if (cooldownTimeElapsed > projectileCooldown) {
-            this->fireNextProjectile(nearestNPC->getCenterPosition().x, nearestNPC->getCenterPosition().y);
-            this->cooldownTimeElapsed = 0.0f;
+            if (nearestNPC != nullptr) {
+                this->cooldownTimeElapsed = 0.0f;
+                this->fireNextProjectile(nearestNPC->getCenterPosition().x, nearestNPC->getCenterPosition().y);
+            }
         }
 
         for (int i=0; i<PROJECTILES_ARR_COUNT; i++) {
