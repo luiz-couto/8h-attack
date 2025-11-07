@@ -20,7 +20,7 @@
 #define PLAYER_START_DAMAGE 10
 
 #define NPC_DEFAULT_COOLDOWN 0.5f
-#define NPCS_NUMBER 15
+#define NPCS_NUMBER 30
 #define DIFFERENT_NPCS_NUM 2
 
 #define BORDERS_OFFSET 150
@@ -28,7 +28,7 @@
 std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "flames" };
 int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2 };
 int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10 };
-int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 70, 100 };
+int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50 };
 
 class Manager {
     private:

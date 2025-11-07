@@ -17,12 +17,14 @@ class Character : public RigidBody {
     int speed;
     int health;
     int damage;
+    int initialHealth;
 
     Character(GamesEngineeringBase::Window *canvas, std::string name, int speed, int health, int damage, int x, int y)
         : RigidBody(canvas, x, y) {
     
         this->name = name;
         this->speed = speed;
+        this->initialHealth = health;
         this->health = health;
         this->damage = damage;
     }
@@ -64,7 +66,7 @@ class Character : public RigidBody {
         }
 
         // Draw health (green)
-        int healthWidth = static_cast<int>((this->health / 100.0f) * HEALTH_BAR_WIDTH);
+        int healthWidth = static_cast<int>((static_cast<float>(this->health) / static_cast<float>(this->initialHealth)) * HEALTH_BAR_WIDTH);
         for (int i=0; i<healthWidth; i++) {
             for (int j=0; j<HEALTH_BAR_HEIGHT; j++) {
                 if (barX + i < 0 || barX + i >= this->canvas->getWidth() ||
