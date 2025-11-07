@@ -1,16 +1,13 @@
 #pragma once
+#include <iostream>
+#include <fstream>
 #include "GamesEngineeringBase.h"
 #include "GameImage.h"
 #include "Position.h"
+#include "Manager.h"
+#include "GameState.h"
 
 #define MINIMUM_TIME_BETWEEN_FRAMES 0.09f
-
-enum GAME_STATE {
-    MAIN_MENU,
-    IN_GAME,
-    PAUSE_MENU,
-    GAME_OVER
-};
 
 Position arrowFirstOption = {290, 285};
 Position arrowSecondOption = {290, 360};
@@ -65,13 +62,15 @@ class Menu {
     
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
     float timeElapsed = 0.0f;
-
+    
     MenuActions *menuActions = &MainMenu;
     
     public:
+    Manager *manager;
     GAME_STATE *gameState;
-    Menu(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
+    Menu(GamesEngineeringBase::Window *canvas, Manager *manager, GAME_STATE *gameState) {
         this->canvas = canvas;
+        this->manager = manager;
         this->gameState = gameState;
         this->gameImage = new GameImage(this->canvas);
 
@@ -156,10 +155,51 @@ void actionQuit(Menu* menu) {
     exit(0);
 }
 
-void exitToMainMenu(Menu *menu) {
-    *menu->gameState = GAME_STATE::MAIN_MENU;
-}
-
 void emptyAction(Menu *menu) {
     // Do nothing
+}
+
+void saveGame(Menu* menu) {
+    std::cout << "Saving game..." << "\n";
+    std::ofstream gameState("assets/saves/0.gamestate");
+
+    // first line is map number
+    gameState << menu->manager->getMapNumber() << "\n";
+
+    // second line is player information
+    Player* player = menu->manager->getPlayer();
+    std::string playerName = player->getName();
+    Position playerPos = player->getPosition();
+    gameState 
+        << playerName << " "
+        << playerPos.x << " " 
+        << playerPos.y << " "
+        << player->speed << " "
+        << player->health << " "
+        << player->damage << "\n";
+
+    // third line is number of NPCs
+    int numOfNPCs = menu->manager->getNPCs()->size();
+    gameState << numOfNPCs << "\n";
+
+    // fourth line is NPC information
+    menu->manager->getNPCs()->forEach([&gameState](NPC &npc, int idx) {
+        std::string npcName = npc.getName();
+        Position npcPos = npc.getPosition();
+        gameState 
+            << npcName << " " 
+            << npcPos.x << " " 
+            << npcPos.y << " "
+            << npc.speed << " "
+            << npc.health << " "
+            << npc.damage << "\n";
+    });
+
+    gameState.close();
+    std::cout << "Game saved." << "\n";
+}
+
+void exitToMainMenu(Menu *menu) {
+    saveGame(menu);
+    *menu->gameState = GAME_STATE::MAIN_MENU;
 }

@@ -66,6 +66,10 @@ class PDList {
         return this->list[idx];
     }
 
+    int size() {
+        return this->nextFreeIdx;
+    }
+
     ~PDList() {
         for (int i = 0; i < nextFreeIdx; i++) {
             delete list[i];

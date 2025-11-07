@@ -10,7 +10,7 @@
 #include "Vector.h"
 #include "Random.h"
 #include "PDList.h"
-#include "Menu.h"
+#include "GameState.h"
 
 #define MAP_NUMBER "4"
 
@@ -27,6 +27,7 @@ class Manager {
     GamesEngineeringBase::Window *canvas;
     Player *player;
     Camera *camera;
+    std::string mapNumber = MAP_NUMBER;
     Map *map;
     PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
 
@@ -50,7 +51,24 @@ class Manager {
             canvas->getHeight() / 2
         );
         this->camera = new Camera(this->player->getPosition());
-        this->map = new Map(this->canvas, MAP_NUMBER);
+        this->map = new Map(this->canvas, this->mapNumber);
+    }
+
+    Manager(GamesEngineeringBase::Window *canvas, std::string mapNumber, Player *player, PDList<NPC, NPCS_NUMBER> *npcs, GAME_STATE *gameState) {
+        this->canvas = canvas;
+        this->gameState = gameState;
+        this->player = player;
+        this->camera = new Camera(this->player->getPosition());
+        this->mapNumber = mapNumber;
+        this->npcs = npcs;
+        this->map = new Map(this->canvas, this->mapNumber);
+    }
+
+    ~Manager() {
+        delete this->player;
+        delete this->camera;
+        delete this->map;
+        delete this->npcs;
     }
 
     void update() {
@@ -151,4 +169,15 @@ class Manager {
         });
     }
 
+    Player* getPlayer() {
+        return this->player;
+    }
+
+    std::string getMapNumber() {
+        return this->mapNumber;
+    }
+
+    PDList<NPC, NPCS_NUMBER> *getNPCs() {
+        return this->npcs;
+    }
 };

@@ -3,6 +3,7 @@
 #include "Manager.h"
 #include "Debug.h"
 #include "Menu.h"
+#include "GameState.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -16,9 +17,9 @@ int main() {
 
     GAME_STATE gameState = GAME_STATE::MAIN_MENU;
 
-    Menu *menu = new Menu(&canvas, &gameState);
     Manager *manager = new Manager(&canvas, &gameState);
-   
+    Menu *menu = new Menu(&canvas, manager, &gameState);
+
     while (running)
     {
         // Check for input (key presses or window events)

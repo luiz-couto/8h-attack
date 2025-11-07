@@ -27,6 +27,10 @@ class Character : public RigidBody {
         this->damage = damage;
     }
 
+    std::string getName() {
+        return this->name;
+    }
+
     void draw(Position cameraPosition) {
         int drawPositionX = this->position.x - cameraPosition.x;
         int drawPositionY = this->position.y - cameraPosition.y;
