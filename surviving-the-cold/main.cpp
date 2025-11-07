@@ -2,6 +2,7 @@
 #include "GamesEngineeringBase.h"
 #include "Manager.h"
 #include "Debug.h"
+#include "Menu.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -13,19 +14,31 @@ int main() {
     canvas.create(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
     bool running = true;
 
+    GAME_STATE gameState = GAME_STATE::MAIN_MENU;
+
+    Menu *menu = new Menu(&canvas, &gameState);
     Manager *manager = new Manager(&canvas);
    
     while (running)
     {
         // Check for input (key presses or window events)
-        manager->update();
+        if (gameState == GAME_STATE::IN_GAME) {
+            manager->update();
+        } else {
+            menu->update();
+        }
 
         // Clear the window for the next frame rendering
         canvas.clear();
         
         // Update game logic
         // Draw();
-        manager->draw();
+
+        if (gameState == GAME_STATE::IN_GAME) {
+            manager->draw();
+        } else {
+            menu->showMainMenu();
+        }
 
         // Display the frame on the screen. This must be called once the frame
         //is finished in order to display the frame.
