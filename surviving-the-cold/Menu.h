@@ -51,7 +51,6 @@ MenuActions PauseMenu = {
 
 class Menu {
     private:
-    GamesEngineeringBase::Window *canvas;
     GameImage *gameImage;
     
     GamesEngineeringBase::Image *mainMenuImage;
@@ -66,6 +65,7 @@ class Menu {
     MenuActions *menuActions = &MainMenu;
     
     public:
+    GamesEngineeringBase::Window *canvas;
     Manager *manager;
     GAME_STATE *gameState;
     Menu(GamesEngineeringBase::Window *canvas, Manager *manager, GAME_STATE *gameState) {
@@ -147,10 +147,6 @@ void startGame(Menu* menu) {
     *menu->gameState = GAME_STATE::IN_GAME;
 }
 
-void loadGame(Menu* menu) {
-    std::cout << "Load Game" << "\n";
-}
-
 void actionQuit(Menu* menu) {
     exit(0);
 }
@@ -166,7 +162,11 @@ void saveGame(Menu* menu) {
     // first line is map number
     gameState << menu->manager->getMapNumber() << "\n";
 
-    // second line is player information
+    // second line is camera position
+    Position cameraPos = menu->manager->getCameraPosition();
+    gameState << cameraPos.x << " " << cameraPos.y << "\n";
+
+    // third line is player information
     Player* player = menu->manager->getPlayer();
     std::string playerName = player->getName();
     Position playerPos = player->getPosition();
@@ -178,11 +178,11 @@ void saveGame(Menu* menu) {
         << player->health << " "
         << player->damage << "\n";
 
-    // third line is number of NPCs
+    // fourth line is number of NPCs
     int numOfNPCs = menu->manager->getNPCs()->size();
     gameState << numOfNPCs << "\n";
 
-    // fourth line is NPC information
+    // fifth line is NPC information
     menu->manager->getNPCs()->forEach([&gameState](NPC &npc, int idx) {
         std::string npcName = npc.getName();
         Position npcPos = npc.getPosition();
@@ -197,6 +197,77 @@ void saveGame(Menu* menu) {
 
     gameState.close();
     std::cout << "Game saved." << "\n";
+}
+
+void loadGame(Menu *menu) {
+    std::cout << "Loading game..." << "\n";
+    std::ifstream gameState("assets/saves/0.gamestate");
+    if (!gameState.is_open()) {
+        std::cout << "No saved game found." << "\n";
+        return;
+    }
+
+    std::string mapNumber;
+    std::getline(gameState, mapNumber);
+
+    int cameraX, cameraY;
+    gameState >> cameraX >> cameraY;
+
+    std::string playerName;
+    float playerX, playerY, playerSpeed, playerHealth, playerDamage;
+    gameState >> playerName >> playerX >> playerY >> playerSpeed >> playerHealth >> playerDamage;
+
+    std::cout << "Loaded Player: " << playerName << " at (" << playerX << ", " << playerY << ")\n";
+    Player* player = new Player(
+        menu->canvas,
+        playerName,
+        playerSpeed,
+        playerHealth,
+        playerDamage,
+        playerX,
+        playerY
+    );
+
+    std::cout << "Creating Manager for loaded game...\n";
+    std::cout << "Map Number: " << mapNumber << "\n";
+    Manager* manager = new Manager(
+        menu->canvas,
+        mapNumber,
+        player,
+        new PDList<NPC, NPCS_NUMBER>(),
+        new Camera(Position{cameraX, cameraY}),
+        menu->gameState
+    );
+
+    int numOfNPCs;
+    gameState >> numOfNPCs;
+
+    for (int i = 0; i < numOfNPCs; i++) {
+        std::string npcName;
+        float npcX, npcY, npcSpeed, npcHealth, npcDamage;
+        gameState >> npcName >> npcX >> npcY >> npcSpeed >> npcHealth >> npcDamage;
+
+        std::cout << "Loaded NPC: " << npcName << " at (" << npcX << ", " << npcY << ")\n";
+
+        NPC* npc = new NPC(
+            menu->canvas,
+            npcName,
+            npcSpeed,
+            npcHealth,
+            npcDamage,
+            npcX,
+            npcY
+        );
+
+        manager->getNPCs()->add(npc);
+    }
+
+    gameState.close();
+
+    delete menu->manager;
+    menu->manager = manager;
+    *menu->gameState = GAME_STATE::IN_GAME;
+    std::cout << "Game loaded." << "\n";
 }
 
 void exitToMainMenu(Menu *menu) {

@@ -54,13 +54,14 @@ class Manager {
         this->map = new Map(this->canvas, this->mapNumber);
     }
 
-    Manager(GamesEngineeringBase::Window *canvas, std::string mapNumber, Player *player, PDList<NPC, NPCS_NUMBER> *npcs, GAME_STATE *gameState) {
+    Manager(GamesEngineeringBase::Window *canvas, std::string mapNumber, Player *player, PDList<NPC, NPCS_NUMBER> *npcs, Camera *camera, GAME_STATE *gameState) {
         this->canvas = canvas;
         this->gameState = gameState;
         this->player = player;
-        this->camera = new Camera(this->player->getPosition());
         this->mapNumber = mapNumber;
         this->npcs = npcs;
+
+        this->camera = camera;
         this->map = new Map(this->canvas, this->mapNumber);
     }
 
@@ -179,5 +180,9 @@ class Manager {
 
     PDList<NPC, NPCS_NUMBER> *getNPCs() {
         return this->npcs;
+    }
+
+    Position getCameraPosition() {
+        return this->camera->getPosition();
     }
 };

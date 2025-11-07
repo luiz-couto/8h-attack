@@ -24,7 +24,7 @@ int main() {
     {
         // Check for input (key presses or window events)
         if (gameState == GAME_STATE::IN_GAME) {
-            manager->update();
+            menu->manager->update();
         } else {
             menu->update();
         }
@@ -36,7 +36,7 @@ int main() {
         // Draw();
 
         if (gameState == GAME_STATE::IN_GAME) {
-            manager->draw();
+            menu->manager->draw();
         } else {
             if (gameState == GAME_STATE::PAUSE_MENU) {
                 menu->showPauseMenu();

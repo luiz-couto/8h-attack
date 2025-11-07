@@ -26,6 +26,7 @@ class NPC : public Character {
             this->frames[i] = new GamesEngineeringBase::Image();
             this->frames[i]->load("assets/characters/" + this->name + "/" + std::to_string(i) + ".png");
         }
+        this->currentFrame = this->frames[0];
     }
 
     void update(Position *playerPos) {
