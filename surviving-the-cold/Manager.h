@@ -10,6 +10,7 @@
 #include "Vector.h"
 #include "Random.h"
 #include "PDList.h"
+#include "Menu.h"
 
 #define MAP_NUMBER "4"
 
@@ -33,9 +34,12 @@ class Manager {
     float timeElapsedNPCs = 0.0f;
     float npcCooldown = NPC_DEFAULT_COOLDOWN;
 
+    GAME_STATE *gameState;
+
     public:
-    Manager(GamesEngineeringBase::Window *canvas) {
+    Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
         this->canvas = canvas;
+        this->gameState = gameState;
         this->player = new Player(
             canvas,
             PLAYER_NAME,
@@ -50,6 +54,11 @@ class Manager {
     }
 
     void update() {
+        if (this->canvas->keyPressed('P')) {
+            *this->gameState = GAME_STATE::PAUSE_MENU;
+            return;
+        }
+
         float timeElapsed = this->timer.dt();
 
         Position playerPos = this->player->getPosition();

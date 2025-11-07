@@ -17,7 +17,7 @@ int main() {
     GAME_STATE gameState = GAME_STATE::MAIN_MENU;
 
     Menu *menu = new Menu(&canvas, &gameState);
-    Manager *manager = new Manager(&canvas);
+    Manager *manager = new Manager(&canvas, &gameState);
    
     while (running)
     {
@@ -37,7 +37,11 @@ int main() {
         if (gameState == GAME_STATE::IN_GAME) {
             manager->draw();
         } else {
-            menu->showMainMenu();
+            if (gameState == GAME_STATE::PAUSE_MENU) {
+                menu->showPauseMenu();
+            } else {
+                menu->showMainMenu();
+            }
         }
 
         // Display the frame on the screen. This must be called once the frame
