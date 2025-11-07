@@ -182,6 +182,13 @@ class Player : public Character {
             case TERRAIN_COLLISION:
                 this->setPositionAsLastPosition();
                 break;
+            case PROJECTILE_COLLISION:
+                Projectile *projectile = static_cast<Projectile*>(rigidBody);
+                if (this->health > 0) {
+                    this->health -= projectile->getDamage();
+                }
+                this->hadDamage = true;
+                break;
         }
     }
 

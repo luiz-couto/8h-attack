@@ -178,6 +178,17 @@ class Manager {
                         playerProjectiles->deleteByIdx(j);
                     }
                 });
+
+                if (npc.isNPCStatic()) {
+                    NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
+                    PDList<Projectile> *npcProjectiles = staticNPC->getProjectilesArray();
+                    npcProjectiles->forEach([&player, &npcProjectiles](Projectile &projectile, int j) {
+                        if (player->detectCollision(&projectile)) {
+                            player->processCollision(PROJECTILE_COLLISION, &projectile);
+                            npcProjectiles->deleteByIdx(j);
+                        }
+                    });
+                }
             });
         }
 
