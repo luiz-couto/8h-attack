@@ -108,12 +108,12 @@ class Player : public Character {
         this->position = this->lastPosition;
     }
 
-    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC) {
+    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition) {
         float frameElapsedTime = this->timer.dt();
 
         this->cooldownTimeElapsed += frameElapsedTime;
         if (cooldownTimeElapsed > projectileCooldown) {
-            if (nearestNPC != nullptr) {
+            if (nearestNPC != nullptr && nearestNPC->isOnCameraView(cameraPosition)) {
                 this->cooldownTimeElapsed = 0.0f;
                 this->fireNextProjectile(nearestNPC->getCenterPosition().x, nearestNPC->getCenterPosition().y);
             }

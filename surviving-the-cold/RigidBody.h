@@ -102,5 +102,16 @@ class RigidBody {
         this->gameImage->drawImage(this->currentFrame, drawPositionX, drawPositionY);
     }
 
+    bool isOnCameraView(Position cameraPosition) {
+        int drawPositionX = this->position.x - cameraPosition.x;
+        int drawPositionY = this->position.y - cameraPosition.y;
+
+        if (drawPositionX + this->getWidth() < 0 || drawPositionX >= this->canvas->getWidth() ||
+            drawPositionY + this->getHeight() < 0 || drawPositionY >= this->canvas->getHeight()) {
+            return false;
+        }
+        return true;
+    }
+
     void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {};
 };

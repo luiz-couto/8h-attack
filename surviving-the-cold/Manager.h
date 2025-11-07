@@ -147,7 +147,7 @@ class Manager {
                     player->processCollision(NPC_COLLISION, &npc);
                 }
 
-                if (player->getDistanceTo(&npc) < player->getDistanceTo(nearestNPC)) {
+                if (npc.isOnCameraView(camera->getPosition()) && player->getDistanceTo(&npc) < player->getDistanceTo(nearestNPC)) {
                     nearestNPC = &npc;
                 }
 
@@ -161,8 +161,8 @@ class Manager {
             });
         }
 
-        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC);
-        
+        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
+
         // check collisions with map objects
         for (int i=0; i<this->map->numberOfObjects; i++) {
             if (this->player->detectCollision(mapObjects[i])) {
