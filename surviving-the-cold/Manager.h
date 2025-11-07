@@ -6,6 +6,7 @@
 #include "Terrain.h"
 #include "Player.h"
 #include "NPC.h"
+#include "NPCStatic.h"
 #include "Map.h"
 #include "Vector.h"
 #include "Random.h"
@@ -21,14 +22,15 @@
 
 #define NPC_DEFAULT_COOLDOWN 0.5f
 #define NPCS_NUMBER 30
-#define DIFFERENT_NPCS_NUM 2
+#define DIFFERENT_NPCS_NUM 3
 
 #define BORDERS_OFFSET 150
 
-std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "flames" };
-int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2 };
-int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10 };
-int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50 };
+std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "flames", "fox" };
+bool NPCS_IS_STATIC[DIFFERENT_NPCS_NUM] = { false, false, true };
+int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2, 0 };
+int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10, 5 };
+int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50, 50 };
 
 class Manager {
     private:
@@ -80,10 +82,10 @@ class Manager {
         delete this->npcs;
     }
 
-    Position generateNewNPCPosition() {
+    Position generateNewNPCPosition(int borderOffset) {
         Position cameraPosition = this->camera->getPosition();
-        int possibleXRange[2][2] = {{0 - BORDERS_OFFSET, cameraPosition.x - BORDERS_OFFSET}, {cameraPosition.x + this->canvas->getWidth() + BORDERS_OFFSET, this->map->getWidthInPixels() + BORDERS_OFFSET}};
-        int possibleYRange[2][2] = {{0 - BORDERS_OFFSET, cameraPosition.y - BORDERS_OFFSET}, {cameraPosition.y + this->canvas->getHeight() + BORDERS_OFFSET, this->map->getHeightInPixels() + BORDERS_OFFSET}};
+        int possibleXRange[2][2] = {{0 - borderOffset, cameraPosition.x - borderOffset}, {cameraPosition.x + this->canvas->getWidth() + borderOffset, this->map->getWidthInPixels() + borderOffset}};
+        int possibleYRange[2][2] = {{0 - borderOffset, cameraPosition.y - borderOffset}, {cameraPosition.y + this->canvas->getHeight() + borderOffset, this->map->getHeightInPixels() + borderOffset}};
 
         RandomInt rangeSelector(0, 1);
         int xRangeIdx = rangeSelector.generate();
@@ -115,16 +117,29 @@ class Manager {
         this->timeElapsedNPCs += timeElapsed;
         int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 1).generate();
         if (this->timeElapsedNPCs > this->npcCooldown) {
-            Position npcPosition = this->generateNewNPCPosition();
-            this->npcs->add(new NPC(
-                this->canvas,
-                NPCS_NAMES[randomNPCIdx],
-                NPCS_SPEEDS[randomNPCIdx],
-                NPCS_HEALTHS[randomNPCIdx],
-                NPCS_DAMAGES[randomNPCIdx],
-                npcPosition.x,
-                npcPosition.y
-            ));
+            if (NPCS_IS_STATIC[randomNPCIdx]) {
+                Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
+                this->npcs->add(new NPCStatic(
+                    this->canvas,
+                    NPCS_NAMES[randomNPCIdx],
+                    NPCS_HEALTHS[randomNPCIdx],
+                    NPCS_DAMAGES[randomNPCIdx],
+                    npcPosition.x,
+                    npcPosition.y
+                ));
+                this->timeElapsedNPCs = 0.0f;
+            } else {
+                Position npcPosition = this->generateNewNPCPosition(BORDERS_OFFSET);
+                this->npcs->add(new NPC(
+                    this->canvas,
+                    NPCS_NAMES[randomNPCIdx],
+                    NPCS_SPEEDS[randomNPCIdx],
+                    NPCS_HEALTHS[randomNPCIdx],
+                    NPCS_DAMAGES[randomNPCIdx],
+                    npcPosition.x,
+                    npcPosition.y
+                ));
+            }
             this->timeElapsedNPCs = 0.0f;
         }
 
@@ -134,7 +149,12 @@ class Manager {
             if (!npc.isAlive()) {
                 npcs->deleteByIdx(idx);
             } else {
-                npc.update(&playerPos);
+                if (npc.isNPCStatic()) {
+                    NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
+                    staticNPC->update(&playerPos);
+                } else {
+                    npc.update(&playerPos);
+                }
             }
         });
         
@@ -193,8 +213,13 @@ class Manager {
         this->player->draw(cameraPosition);
         this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
-        this->npcs->forEach([&cameraPosition](NPC &npc, int idx) {
+        Map *map = this->map;
+        this->npcs->forEach([&cameraPosition, &map](NPC &npc, int idx) {
             npc.draw(cameraPosition);
+            if (npc.isNPCStatic()) {
+                NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
+                staticNPC->drawProjectiles(cameraPosition, map->getWidthInPixels(), map->getHeightInPixels());
+            }
         });
     }
 

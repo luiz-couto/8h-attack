@@ -15,13 +15,13 @@ class Projectile : public RigidBody {
     int damage = DEFAULT_PROJECTILE_DAMAGE;
 
     public:
-    Projectile(GamesEngineeringBase::Window* canvas, int x, int y, int targetX, int targetY, int speed = DEFAULT_SPEED)
+    Projectile(GamesEngineeringBase::Window* canvas, int x, int y, int targetX, int targetY, std::string name, int speed = DEFAULT_SPEED)
      : RigidBody(canvas, x, y) {
         this->setTarget(targetX, targetY);
         this->speed = speed;
 
         GamesEngineeringBase::Image *projectileImage = new GamesEngineeringBase::Image();
-        projectileImage->load("assets/projectiles/1.png");
+        projectileImage->load("assets/projectiles/" + name + ".png");
         this->currentFrame = projectileImage;
     }
 

@@ -10,9 +10,10 @@
 #define TIME_BETWEEN_FRAMES 0.20f
 
 class NPC : public Character {
-    private:
+    protected:
     GamesEngineeringBase::Image *frames[3];
     int frameCount = 0;
+    bool isStatic = false;
 
     public:
     NPC(GamesEngineeringBase::Window* canvas, std::string name, int speed, int health, int damage, int x, int y)
@@ -69,5 +70,9 @@ class NPC : public Character {
             default:
                 return;
         }
+    }
+
+    bool isNPCStatic() {
+        return this->isStatic;
     }
 };
