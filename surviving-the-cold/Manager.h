@@ -17,10 +17,12 @@
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
 #define PLAYER_START_HEALTH 100
-#define PLAYER_START_DAMAGE 1
+#define PLAYER_START_DAMAGE 10
 
 #define NPC_DEFAULT_COOLDOWN 0.5f
 #define NPCS_NUMBER 30
+
+#define BORDERS_OFFSET 150
 
 class Manager {
     private:
@@ -72,6 +74,23 @@ class Manager {
         delete this->npcs;
     }
 
+    Position generateNewNPCPosition() {
+        Position cameraPosition = this->camera->getPosition();
+        int possibleXRange[2][2] = {{0 - BORDERS_OFFSET, cameraPosition.x - BORDERS_OFFSET}, {cameraPosition.x + this->canvas->getWidth() + BORDERS_OFFSET, this->map->getWidthInPixels() + BORDERS_OFFSET}};
+        int possibleYRange[2][2] = {{0 - BORDERS_OFFSET, cameraPosition.y - BORDERS_OFFSET}, {cameraPosition.y + this->canvas->getHeight() + BORDERS_OFFSET, this->map->getHeightInPixels() + BORDERS_OFFSET}};
+
+        RandomInt rangeSelector(0, 1);
+        int xRangeIdx = rangeSelector.generate();
+        int yRangeIdx = rangeSelector.generate();
+        RandomInt xGenerator(possibleXRange[xRangeIdx][0], possibleXRange[xRangeIdx][1]);
+        RandomInt yGenerator(possibleYRange[yRangeIdx][0], possibleYRange[yRangeIdx][1]);
+        
+        Position npcPosition;
+        npcPosition.x = xGenerator.generate();
+        npcPosition.y = yGenerator.generate();
+        return npcPosition;
+    }
+
     void update() {
         if (this->canvas->keyPressed('P')) {
             *this->gameState = GAME_STATE::PAUSE_MENU;
@@ -89,14 +108,15 @@ class Manager {
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
         if (this->timeElapsedNPCs > this->npcCooldown) {
+            Position npcPosition = this->generateNewNPCPosition();
             this->npcs->add(new NPC(
                 this->canvas,
                 "flames",
                 RandomInt(1, 4).generate(),
                 100,
                 1,
-                RandomInt(0, this->map->getWidthInPixels()).generate(),
-                RandomInt(0, this->map->getHeightInPixels()).generate()
+                npcPosition.x,
+                npcPosition.y
             ));
             this->timeElapsedNPCs = 0.0f;
         }
