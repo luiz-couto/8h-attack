@@ -29,7 +29,8 @@ struct MenuActions {
     MenuAction third;
 };
 
-void startGame(Menu* menu);
+void startNewGame(Menu* menu);
+void continueGame(Menu* menu);
 void loadGame(Menu* menu);
 void actionQuit(Menu* menu);
 void exitToMainMenu(Menu* menu);
@@ -37,14 +38,14 @@ void emptyAction(Menu* menu);
 
 MenuActions MainMenu = {
     3,
-    startGame,
+    startNewGame,
     loadGame,
     actionQuit
 };
 
 MenuActions PauseMenu = {
     2,
-    startGame,
+    continueGame,
     exitToMainMenu,
     emptyAction
 };
@@ -143,7 +144,14 @@ class Menu {
     }
 };
 
-void startGame(Menu* menu) {
+void startNewGame(Menu* menu) {
+    Manager *manager = new Manager(menu->canvas, menu->gameState);
+    delete menu->manager;
+    menu->manager = manager;
+    *menu->gameState = GAME_STATE::IN_GAME;
+}
+
+void continueGame(Menu* menu) {
     *menu->gameState = GAME_STATE::IN_GAME;
 }
 
