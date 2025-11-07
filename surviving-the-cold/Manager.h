@@ -20,9 +20,15 @@
 #define PLAYER_START_DAMAGE 10
 
 #define NPC_DEFAULT_COOLDOWN 0.5f
-#define NPCS_NUMBER 30
+#define NPCS_NUMBER 15
+#define DIFFERENT_NPCS_NUM 2
 
 #define BORDERS_OFFSET 150
+
+std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "flames" };
+int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2 };
+int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10 };
+int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 70, 100 };
 
 class Manager {
     private:
@@ -107,14 +113,15 @@ class Manager {
 
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
+        int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 1).generate();
         if (this->timeElapsedNPCs > this->npcCooldown) {
             Position npcPosition = this->generateNewNPCPosition();
             this->npcs->add(new NPC(
                 this->canvas,
-                "balle",
-                RandomInt(1, 4).generate(),
-                100,
-                1,
+                NPCS_NAMES[randomNPCIdx],
+                NPCS_SPEEDS[randomNPCIdx],
+                NPCS_HEALTHS[randomNPCIdx],
+                NPCS_DAMAGES[randomNPCIdx],
                 npcPosition.x,
                 npcPosition.y
             ));
@@ -132,9 +139,10 @@ class Manager {
         });
         
         NPC *nearestNPC = this->npcs->at(0);
+        Camera *camera = this->camera;
         if (nearestNPC != nullptr) {
             Player *player = this->player;
-            npcs->forEach([&nearestNPC, &player](NPC &npc, int idx) {
+            npcs->forEach([&nearestNPC, &player, &camera](NPC &npc, int idx) {
                 if (player->detectCollision(&npc)) {
                     player->processCollision(NPC_COLLISION, &npc);
                 }
