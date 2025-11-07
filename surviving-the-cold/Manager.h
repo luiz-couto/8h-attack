@@ -111,7 +111,7 @@ class Manager {
             Position npcPosition = this->generateNewNPCPosition();
             this->npcs->add(new NPC(
                 this->canvas,
-                "flames",
+                "balle",
                 RandomInt(1, 4).generate(),
                 100,
                 1,
