@@ -23,7 +23,7 @@
 #define NPC_DEFAULT_COOLDOWN 1.5f
 #define STATIC_NPC_DEFAULT_COOLDOWN 5.0f
 
-#define NPCS_NUMBER 30
+#define NPCS_NUMBER 60
 #define DIFFERENT_NPCS_NUM 5
 
 #define BORDERS_OFFSET 150
@@ -119,6 +119,22 @@ class Manager {
         // update camera
         this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
+        // generate new static NPCs
+        this->timeElapsedStaticNPCs += timeElapsed;
+        int staticNPCIdx = DIFFERENT_NPCS_NUM - 1;
+        if (this->timeElapsedStaticNPCs > this->staticNpcCooldown) {            
+            Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
+            this->npcs->add(new NPCStatic(
+                this->canvas,
+                NPCS_NAMES[staticNPCIdx],
+                NPCS_HEALTHS[staticNPCIdx],
+                NPCS_DAMAGES[staticNPCIdx],
+                npcPosition.x,
+                npcPosition.y
+            ));
+            this->timeElapsedStaticNPCs = 0.0f;
+        }
+
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
         int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 2).generate();
@@ -135,22 +151,6 @@ class Manager {
             ));
             this->timeElapsedNPCs = 0.0f;
             this->npcCooldown *= 0.98f;
-        }
-
-        // generate new static NPCs
-        this->timeElapsedStaticNPCs += timeElapsed;
-        int staticNPCIdx = DIFFERENT_NPCS_NUM - 1;
-        if (this->timeElapsedStaticNPCs > this->staticNpcCooldown) {            
-            Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
-            this->npcs->add(new NPCStatic(
-                this->canvas,
-                NPCS_NAMES[staticNPCIdx],
-                NPCS_HEALTHS[staticNPCIdx],
-                NPCS_DAMAGES[staticNPCIdx],
-                npcPosition.x,
-                npcPosition.y
-            ));
-            this->timeElapsedStaticNPCs = 0.0f;
         }
 
         // update NPCs
