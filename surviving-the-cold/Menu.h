@@ -157,12 +157,12 @@ class Menu {
         this->gameImage->drawImage(arrowImage, arrowPositions[arrowPositionIndex].x, arrowPositions[arrowPositionIndex].y);
     }
 
-    void showGameOverMenu() {
+    void showGameOverMenu(double averageFPS) {
         this->gameImage->drawImage(gameOverMenuImage, 0, 0);
         this->gameImage->drawImage(arrowImage, arrowPositions[arrowPositionIndex].x, arrowPositions[arrowPositionIndex].y);
 
         this->display->drawNumber<int>(this->manager->getScore(), 385, 470);
-        this->display->drawNumber<float>(60.3565, 362, 545);
+        this->display->drawNumber<double>(averageFPS, 362, 545);
     }
 };
 
