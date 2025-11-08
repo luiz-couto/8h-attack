@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <chrono>
+#include <thread>
 #include "GamesEngineeringBase.h"
 #include "Camera.h"
 #include "Terrain.h"
@@ -107,11 +109,13 @@ class Manager {
 
     void update() {
         if (!this->player->isAlive()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1200));
             *this->gameState = GAME_STATE::GAME_OVER;
             return;
         }
 
         if (this->canvas->keyPressed('P')) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             *this->gameState = GAME_STATE::PAUSE_MENU;
             return;
         }
