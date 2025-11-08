@@ -200,7 +200,8 @@ void saveGame(Menu* menu) {
             << npcPos.y << " "
             << npc.speed << " "
             << npc.health << " "
-            << npc.damage << "\n";
+            << npc.damage << " "
+            << npc.isNPCStatic() << "\n";
     });
 
     gameState.close();
@@ -252,10 +253,22 @@ void loadGame(Menu *menu) {
 
     for (int i = 0; i < numOfNPCs; i++) {
         std::string npcName;
-        float npcX, npcY, npcSpeed, npcHealth, npcDamage;
-        gameState >> npcName >> npcX >> npcY >> npcSpeed >> npcHealth >> npcDamage;
+        float npcX, npcY, npcSpeed, npcHealth, npcDamage, isStatic;
+        gameState >> npcName >> npcX >> npcY >> npcSpeed >> npcHealth >> npcDamage >> isStatic;
 
-        std::cout << "Loaded NPC: " << npcName << " at (" << npcX << ", " << npcY << ")\n";
+        if (isStatic) {
+            NPCStatic* staticNPC = new NPCStatic(
+                menu->canvas,
+                npcName,
+                npcHealth,
+                npcDamage,
+                npcX,
+                npcY
+            );
+
+            manager->getNPCs()->add(staticNPC);
+            continue;
+        }
 
         NPC* npc = new NPC(
             menu->canvas,
