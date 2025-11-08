@@ -40,6 +40,8 @@ int main() {
         } else {
             if (gameState == GAME_STATE::PAUSE_MENU) {
                 menu->showPauseMenu();
+            } else if (gameState == GAME_STATE::GAME_OVER) {
+                menu->showGameOverMenu();
             } else {
                 menu->showMainMenu();
             }

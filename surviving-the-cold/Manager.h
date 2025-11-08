@@ -106,6 +106,11 @@ class Manager {
     }
 
     void update() {
+        if (!this->player->isAlive()) {
+            *this->gameState = GAME_STATE::GAME_OVER;
+            return;
+        }
+
         if (this->canvas->keyPressed('P')) {
             *this->gameState = GAME_STATE::PAUSE_MENU;
             return;

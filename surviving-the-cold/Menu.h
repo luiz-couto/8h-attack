@@ -33,8 +33,9 @@ void startNewGame(Menu* menu);
 void continueGame(Menu* menu);
 void loadGame(Menu* menu);
 void actionQuit(Menu* menu);
-void exitToMainMenu(Menu* menu);
+void saveAndExitToMainMenu(Menu* menu);
 void emptyAction(Menu* menu);
+void exitToMainMenu(Menu* menu);
 
 MenuActions MainMenu = {
     3,
@@ -46,6 +47,13 @@ MenuActions MainMenu = {
 MenuActions PauseMenu = {
     2,
     continueGame,
+    saveAndExitToMainMenu,
+    emptyAction
+};
+
+MenuActions GameOverMenu = {
+    2,
+    startNewGame,
     exitToMainMenu,
     emptyAction
 };
@@ -56,6 +64,7 @@ class Menu {
     
     GamesEngineeringBase::Image *mainMenuImage;
     GamesEngineeringBase::Image *pauseMenuImage;
+    GamesEngineeringBase::Image *gameOverMenuImage;
     
     GamesEngineeringBase::Image *arrowImage;
     int arrowPositionIndex = 0;
@@ -81,6 +90,9 @@ class Menu {
         this->pauseMenuImage = new GamesEngineeringBase::Image();
         this->pauseMenuImage->load("assets/menu/pauseMenu.png");
 
+        this->gameOverMenuImage = new GamesEngineeringBase::Image();
+        this->gameOverMenuImage->load("assets/menu/gameOverMenu.png");
+
         this->arrowImage = new GamesEngineeringBase::Image();
         this->arrowImage->load("assets/menu/whiteArrow.png");
         this->arrowPositionIndex = 0;
@@ -93,6 +105,9 @@ class Menu {
                 break;
             case GAME_STATE::PAUSE_MENU:
                 this->menuActions = &PauseMenu;
+                break;
+            case GAME_STATE::GAME_OVER:
+                this->menuActions = &GameOverMenu;
                 break;
             default:
                 break;
@@ -140,7 +155,8 @@ class Menu {
     }
 
     void showGameOverMenu() {
-        // Implementation for showing the game over menu
+        this->gameImage->drawImage(gameOverMenuImage, 0, 0);
+        this->gameImage->drawImage(arrowImage, arrowPositions[arrowPositionIndex].x, arrowPositions[arrowPositionIndex].y);
     }
 };
 
@@ -292,6 +308,10 @@ void loadGame(Menu *menu) {
 }
 
 void exitToMainMenu(Menu *menu) {
+    *menu->gameState = GAME_STATE::MAIN_MENU;
+}
+
+void saveAndExitToMainMenu(Menu *menu) {
     saveGame(menu);
     *menu->gameState = GAME_STATE::MAIN_MENU;
 }
