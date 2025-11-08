@@ -67,6 +67,14 @@ class NPC : public Character {
                 this->hadDamage = true;
                 break;
             }
+            case AOE_PLAYER_ATTACK: {
+                Character *player = static_cast<Character*>(rigidBody);
+                if (this->health > 0) {
+                    this->health -= player->damage * 3;
+                }
+                this->hadDamage = true;
+                break;
+            }
             default:
                 return;
         }

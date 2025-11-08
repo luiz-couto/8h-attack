@@ -172,7 +172,21 @@ class Manager {
         Camera *camera = this->camera;
         if (nearestNPC != nullptr) {
             Player *player = this->player;
-            npcs->forEach([&nearestNPC, &player, &camera](NPC &npc, int idx) {
+
+            int aoeNPCSAffected = 0;
+            if (player->isAOEActivated) {
+                aoeNPCSAffected = this->player->aoeNPCSAffected;
+                this->npcs->sort([](NPC &a, NPC &b) {
+                    return a.health > b.health;
+                });
+                player->isAOEActivated = false;
+            }
+
+            npcs->forEach([&nearestNPC, &player, &camera, aoeNPCSAffected](NPC &npc, int idx) {
+                if (idx < aoeNPCSAffected) {
+                    npc.processCollision(AOE_PLAYER_ATTACK, player);
+                }
+
                 if (player->detectCollision(&npc)) {
                     player->processCollision(NPC_COLLISION, &npc);
                 }
@@ -242,6 +256,8 @@ class Manager {
                 staticNPC->drawProjectiles(cameraPosition, map->getWidthInPixels(), map->getHeightInPixels());
             }
         });
+
+        this->player->drawAOEBarCharging();
     }
 
     Player* getPlayer() {

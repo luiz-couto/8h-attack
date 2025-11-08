@@ -17,6 +17,10 @@
 #define PROJECTILES_ARR_COUNT 100
 #define PROJECTILE_DEFAULT_COOLDOWN 0.2f
 
+#define START_AOE_DAMAGE 30
+#define START_AOE_NPCS_AFFECTED 10
+#define AOE_COOLDOWN_TIME 10.0f
+
 struct Rotation {
     GamesEngineeringBase::Image *south[5];
     GamesEngineeringBase::Image *north[5];
@@ -36,7 +40,15 @@ class Player : public Character {
     float projectileCooldown = PROJECTILE_DEFAULT_COOLDOWN;
     float cooldownTimeElapsed = 0.0f;
 
+    GamesEngineeringBase::Image *aoeBarFrame = new GamesEngineeringBase::Image();
+
     public:
+    int aoeDamage = START_AOE_DAMAGE;
+    int aoeNPCSAffected = START_AOE_NPCS_AFFECTED;
+    bool isAOEActivated = false;
+    float aoeCooldownTime = AOE_COOLDOWN_TIME;
+    float aoeTimeElapsed = 0.0f;
+
     Player(GamesEngineeringBase::Window *canvas, std::string name, int speed, int health, int damage, int x, int y)
         : Character(canvas, name, speed, health, damage, x, y) {
 
@@ -49,6 +61,8 @@ class Player : public Character {
         this->rotationImages = rotationImages;
         this->currentFrame = this->rotationImages.south[0];
         this->lastPosition = this->position;
+
+        this->aoeBarFrame->load("assets/aoe/progressBar.png");
     }
 
     void fireNextProjectile(int targetX, int targetY) {
@@ -125,6 +139,12 @@ class Player : public Character {
             projectile.update();
         });
 
+        this->aoeTimeElapsed += frameElapsedTime;
+        if (this->aoeTimeElapsed > this->aoeCooldownTime && this->canvas->keyPressed(' ')) {
+            this->isAOEActivated = true;
+            this->aoeTimeElapsed = 0.0f;
+        }
+
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->speed, 0);
             selectNextFrame('A', this->rotationImages.west);
@@ -195,5 +215,36 @@ class Player : public Character {
 
     void update() {
         this->lastPosition = this->position;
+    }
+
+    void drawAOEBarCharging() {
+        this->gameImage->drawImage(this->aoeBarFrame, this->canvas->getWidth() / 2, this->canvas->getHeight() - 50);
+        int barX = this->canvas->getWidth() / 2 + 245;
+        int barY = this->canvas->getHeight() - 32;
+        int barWidth = 245;
+        int barHeight = 15;
+
+        // Draw background (gray)
+        for (int i=0; i<barWidth; i++) {
+            for (int j=0; j<barHeight; j++) {
+                if (barX + i < 0 || barX + i >= this->canvas->getWidth() ||
+                    barY + j < 0 || barY + j >= this->canvas->getHeight()) {
+                    continue;
+                }
+                this->canvas->draw(barX + i, barY + j, 128, 128, 128);
+            }
+        }
+
+        // Draw charge (blue)
+        int chargeWidth = static_cast<int>((min(this->aoeTimeElapsed, this->aoeCooldownTime) / this->aoeCooldownTime) * barWidth);
+        for (int i=0; i<chargeWidth; i++) {
+            for (int j=0; j<barHeight; j++) {
+                if (barX + i < 0 || barX + i >= this->canvas->getWidth() ||
+                    barY + j < 0 || barY + j >= this->canvas->getHeight()) {
+                    continue;
+                }
+                this->canvas->draw(barX + i, barY + j, 0, 0, 255);
+            }
+        }
     }
 };
