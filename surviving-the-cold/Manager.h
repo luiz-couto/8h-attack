@@ -13,7 +13,7 @@
 #include "PDList.h"
 #include "GameState.h"
 
-#define MAP_NUMBER "4"
+#define MAP_NUMBER "5"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
@@ -22,15 +22,15 @@
 
 #define NPC_DEFAULT_COOLDOWN 0.5f
 #define NPCS_NUMBER 30
-#define DIFFERENT_NPCS_NUM 3
+#define DIFFERENT_NPCS_NUM 5
 
 #define BORDERS_OFFSET 150
 
-std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "flames", "fox" };
-bool NPCS_IS_STATIC[DIFFERENT_NPCS_NUM] = { false, false, true };
-int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2, 0 };
-int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10, 5 };
-int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50, 50 };
+std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "green", "red", "purple", "fox" };
+bool NPCS_IS_STATIC[DIFFERENT_NPCS_NUM] = { false, false, false, false, true };
+int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2, 3, 5, 0 };
+int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10, 7, 1, 5 };
+int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50, 40, 200, 50 };
 
 class Manager {
     private:
@@ -115,7 +115,8 @@ class Manager {
 
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
-        int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 1).generate();
+        int randomNPCIdx = RandomInt(0, 3).generate();
+        //int randomNPCIdx = 0;
         if (this->timeElapsedNPCs > this->npcCooldown) {
             if (NPCS_IS_STATIC[randomNPCIdx]) {
                 Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
