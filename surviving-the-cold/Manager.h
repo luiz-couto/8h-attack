@@ -20,7 +20,9 @@
 #define PLAYER_START_HEALTH 100
 #define PLAYER_START_DAMAGE 10
 
-#define NPC_DEFAULT_COOLDOWN 0.5f
+#define NPC_DEFAULT_COOLDOWN 1.5f
+#define STATIC_NPC_DEFAULT_COOLDOWN 5.0f
+
 #define NPCS_NUMBER 30
 #define DIFFERENT_NPCS_NUM 5
 
@@ -28,7 +30,7 @@
 
 std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "green", "red", "purple", "flames" };
 bool NPCS_IS_STATIC[DIFFERENT_NPCS_NUM] = { false, false, false, false, true };
-int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 4, 2, 3, 5, 0 };
+int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 3, 2, 2, 4, 0 };
 int NPCS_DAMAGES[DIFFERENT_NPCS_NUM] = { 5, 10, 7, 1, 5 };
 int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50, 40, 60, 70 };
 
@@ -42,8 +44,12 @@ class Manager {
     PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
 
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
+    
     float timeElapsedNPCs = 0.0f;
     float npcCooldown = NPC_DEFAULT_COOLDOWN;
+
+    float timeElapsedStaticNPCs = 0.0f;
+    float staticNpcCooldown = STATIC_NPC_DEFAULT_COOLDOWN;
 
     GAME_STATE *gameState;
 
@@ -115,33 +121,36 @@ class Manager {
 
         // generate new NPCs
         this->timeElapsedNPCs += timeElapsed;
-        int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 1).generate();
-        //int randomNPCIdx = 0;
-        if (this->timeElapsedNPCs > this->npcCooldown) {
-            if (NPCS_IS_STATIC[randomNPCIdx]) {
-                Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
-                this->npcs->add(new NPCStatic(
-                    this->canvas,
-                    NPCS_NAMES[randomNPCIdx],
-                    NPCS_HEALTHS[randomNPCIdx],
-                    NPCS_DAMAGES[randomNPCIdx],
-                    npcPosition.x,
-                    npcPosition.y
-                ));
-                this->timeElapsedNPCs = 0.0f;
-            } else {
-                Position npcPosition = this->generateNewNPCPosition(BORDERS_OFFSET);
-                this->npcs->add(new NPC(
-                    this->canvas,
-                    NPCS_NAMES[randomNPCIdx],
-                    NPCS_SPEEDS[randomNPCIdx],
-                    NPCS_HEALTHS[randomNPCIdx],
-                    NPCS_DAMAGES[randomNPCIdx],
-                    npcPosition.x,
-                    npcPosition.y
-                ));
-            }
+        int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 2).generate();
+        if (this->timeElapsedNPCs > this->npcCooldown) {            
+            Position npcPosition = this->generateNewNPCPosition(BORDERS_OFFSET);
+            this->npcs->add(new NPC(
+                this->canvas,
+                NPCS_NAMES[randomNPCIdx],
+                NPCS_SPEEDS[randomNPCIdx],
+                NPCS_HEALTHS[randomNPCIdx],
+                NPCS_DAMAGES[randomNPCIdx],
+                npcPosition.x,
+                npcPosition.y
+            ));
             this->timeElapsedNPCs = 0.0f;
+            this->npcCooldown *= 0.98f;
+        }
+
+        // generate new static NPCs
+        this->timeElapsedStaticNPCs += timeElapsed;
+        int staticNPCIdx = DIFFERENT_NPCS_NUM - 1;
+        if (this->timeElapsedStaticNPCs > this->staticNpcCooldown) {            
+            Position npcPosition = this->generateNewNPCPosition(-BORDERS_OFFSET);
+            this->npcs->add(new NPCStatic(
+                this->canvas,
+                NPCS_NAMES[staticNPCIdx],
+                NPCS_HEALTHS[staticNPCIdx],
+                NPCS_DAMAGES[staticNPCIdx],
+                npcPosition.x,
+                npcPosition.y
+            ));
+            this->timeElapsedStaticNPCs = 0.0f;
         }
 
         // update NPCs

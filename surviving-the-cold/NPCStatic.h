@@ -27,6 +27,7 @@ class NPCStatic : public NPC {
             targetX,
             targetY,
             "0",
+            this->damage,
             PROJECTILE_SPEED
         ));
     }

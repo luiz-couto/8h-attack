@@ -58,7 +58,8 @@ class Player : public Character {
             this->position.y,
             targetX,
             targetY,
-            "1"
+            "1",
+            20
         ));
     }
 
