@@ -68,7 +68,7 @@ int main() {
 
         // Draw the current frame
         if (gameState == GAME_STATE::IN_GAME) {
-            menu->manager->draw();
+            menu->manager->draw(fps);
         } else {
             if (gameState == GAME_STATE::PAUSE_MENU) {
                 menu->showPauseMenu();

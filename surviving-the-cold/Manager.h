@@ -14,6 +14,8 @@
 #include "Random.h"
 #include "PDList.h"
 #include "GameState.h"
+#include "Display.h"
+#include "GameImage.h"
 
 #define MAP_NUMBER "5"
 
@@ -39,6 +41,7 @@ int NPCS_HEALTHS[DIFFERENT_NPCS_NUM] = { 30, 50, 40, 60, 70 };
 class Manager {
     private:
     GamesEngineeringBase::Window *canvas;
+    GameImage *gameImage;
     Player *player;
     Camera *camera;
     std::string mapNumber = MAP_NUMBER;
@@ -56,10 +59,17 @@ class Manager {
     GAME_STATE *gameState;
     int score = 0;
 
+    Display *display;
+    GamesEngineeringBase::Image *FPSImage = new GamesEngineeringBase::Image();
+
     public:
     Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
         this->canvas = canvas;
         this->gameState = gameState;
+        this->display = new Display(canvas);
+        this->FPSImage->load("assets/display/fps.png");
+        this->gameImage = new GameImage(canvas);
+
         this->player = new Player(
             canvas,
             PLAYER_NAME,
@@ -253,7 +263,7 @@ class Manager {
         this->player->update();
     }
 
-    void draw() {
+    void draw(double fps) {
         Position cameraPosition = this->camera->getPosition();
 
         this->map->draw(cameraPosition);
@@ -270,6 +280,12 @@ class Manager {
         });
 
         this->player->drawAOEBarCharging();
+        this->drawFPS(fps);
+    }
+
+    void drawFPS(double fps) {
+        this->gameImage->drawImage(this->FPSImage, 20, 720);
+        this->display->drawNumber<double>(fps, 100, 720);
     }
 
     Player* getPlayer() {
