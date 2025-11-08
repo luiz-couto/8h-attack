@@ -6,6 +6,7 @@
 #include "Position.h"
 #include "Manager.h"
 #include "GameState.h"
+#include "Display.h"
 
 #define MINIMUM_TIME_BETWEEN_FRAMES 0.09f
 
@@ -71,6 +72,7 @@ class Menu {
     
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
     float timeElapsed = 0.0f;
+    Display *display;
     
     MenuActions *menuActions = &MainMenu;
     
@@ -83,6 +85,7 @@ class Menu {
         this->manager = manager;
         this->gameState = gameState;
         this->gameImage = new GameImage(this->canvas);
+        this->display = new Display(this->canvas);
 
         this->mainMenuImage = new GamesEngineeringBase::Image();
         this->mainMenuImage->load("assets/menu/mainMenu.png");
@@ -157,6 +160,9 @@ class Menu {
     void showGameOverMenu() {
         this->gameImage->drawImage(gameOverMenuImage, 0, 0);
         this->gameImage->drawImage(arrowImage, arrowPositions[arrowPositionIndex].x, arrowPositions[arrowPositionIndex].y);
+
+        this->display->drawNumber<int>(this->manager->getScore(), 385, 470);
+        this->display->drawNumber<float>(60.3565, 362, 545);
     }
 };
 

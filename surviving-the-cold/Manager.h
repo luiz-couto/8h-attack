@@ -54,6 +54,7 @@ class Manager {
     float staticNpcCooldown = STATIC_NPC_DEFAULT_COOLDOWN;
 
     GAME_STATE *gameState;
+    int score = 0;
 
     public:
     Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
@@ -164,8 +165,10 @@ class Manager {
 
         // update NPCs
         PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
-        npcs->forEach([&playerPos, &npcs](NPC &npc, int idx) {
+        int &score = this->score;
+        npcs->forEach([&playerPos, &npcs, &score](NPC &npc, int idx) {
             if (!npc.isAlive()) {
+                score += npc.damage;
                 npcs->deleteByIdx(idx);
             } else {
                 if (npc.isNPCStatic()) {
@@ -283,5 +286,9 @@ class Manager {
 
     Position getCameraPosition() {
         return this->camera->getPosition();
+    }
+
+    int getScore() {
+        return this->score;
     }
 };
