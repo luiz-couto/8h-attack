@@ -47,7 +47,7 @@ class NPCStatic : public NPC {
         return this->projectiles;
     }
 
-    void update(Position *playerPosition) {
+    void update(Position *playerPosition, bool isMapInfinite, int boundaryWidth, int boundaryHeight) {
         float frameElapsedTime = this->timer.dt();
         
         this->cooldownTimeElapsed += frameElapsedTime;
@@ -56,8 +56,8 @@ class NPCStatic : public NPC {
             this->fireNextProjectile(playerPosition->x, playerPosition->y);
         }
 
-        this->projectiles->forEach([](Projectile &projectile, int idx) {
-            projectile.update();
+        this->projectiles->forEach([&isMapInfinite, &boundaryWidth, &boundaryHeight](Projectile &projectile, int idx) {
+            projectile.update(isMapInfinite, boundaryWidth, boundaryHeight);
         });
 
         this->timeElapsed += frameElapsedTime;

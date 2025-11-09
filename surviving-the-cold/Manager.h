@@ -17,7 +17,7 @@
 #include "Display.h"
 #include "GameImage.h"
 
-#define MAP_NUMBER "5"
+#define MAP_NUMBER "3"
 
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
@@ -80,7 +80,7 @@ class Manager {
             canvas->getHeight() / 2
         );
         this->camera = new Camera(this->player->getPosition());
-        this->map = new Map(this->canvas, this->mapNumber);
+        this->map = new Map(this->canvas, this->mapNumber, true);
     }
 
     Manager(GamesEngineeringBase::Window *canvas, std::string mapNumber, Player *player, PDList<NPC, NPCS_NUMBER> *npcs, Camera *camera, GAME_STATE *gameState) {
@@ -109,9 +109,13 @@ class Manager {
         RandomInt rangeSelector(0, 1);
         int xRangeIdx = rangeSelector.generate();
         int yRangeIdx = rangeSelector.generate();
-        RandomInt xGenerator(possibleXRange[xRangeIdx][0], possibleXRange[xRangeIdx][1]);
-        RandomInt yGenerator(possibleYRange[yRangeIdx][0], possibleYRange[yRangeIdx][1]);
+
+        //RandomInt xGenerator(possibleXRange[xRangeIdx][0], possibleXRange[xRangeIdx][1]);
+        //RandomInt yGenerator(possibleYRange[yRangeIdx][0], possibleYRange[yRangeIdx][1]);
         
+        RandomInt xGenerator(0, 3000);
+        RandomInt yGenerator(0, 3000);
+
         Position npcPosition;
         npcPosition.x = xGenerator.generate();
         npcPosition.y = yGenerator.generate();
@@ -137,7 +141,11 @@ class Manager {
         RigidBody **mapObjects = this->map->getObjects();
         
         // update camera
-        this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
+        if (this->map->isInfinite) {
+            this->camera->updateInfinite(playerPos);
+        } else {
+            this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
+        }
 
         // generate new static NPCs
         this->timeElapsedStaticNPCs += timeElapsed;
@@ -176,16 +184,17 @@ class Manager {
         // update NPCs
         PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
         int &score = this->score;
-        npcs->forEach([&playerPos, &npcs, &score](NPC &npc, int idx) {
+        Map *map = this->map;
+        npcs->forEach([&playerPos, &npcs, &score, &map](NPC &npc, int idx) {
             if (!npc.isAlive()) {
                 score += npc.damage;
                 npcs->deleteByIdx(idx);
             } else {
                 if (npc.isNPCStatic()) {
                     NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
-                    staticNPC->update(&playerPos);
+                    staticNPC->update(&playerPos, map->isInfinite, map->getWidthInPixels(), map->getHeightInPixels());
                 } else {
-                    npc.update(&playerPos);
+                    npc.update(&playerPos, map->isInfinite, map->getWidthInPixels(), map->getHeightInPixels());
                 }
             }
         });
@@ -238,7 +247,13 @@ class Manager {
             });
         }
 
-        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
+        this->player->reactToMovementKeys(
+            this->map->getWidthInPixels(), 
+            this->map->getHeightInPixels(), 
+            nearestNPC, 
+            camera->getPosition(),
+            this->map->isInfinite
+        );
 
         // check collisions with map objects
         for (int i=0; i<this->map->numberOfObjects; i++) {
@@ -268,6 +283,8 @@ class Manager {
 
         this->map->draw(cameraPosition);
         this->player->draw(cameraPosition);
+
+
         this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 
         Map *map = this->map;

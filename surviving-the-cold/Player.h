@@ -124,7 +124,7 @@ class Player : public Character {
         this->position = this->lastPosition;
     }
 
-    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition) {
+    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition, bool infiniteMap) {
         float frameElapsedTime = this->timer.dt();
 
         this->cooldownTimeElapsed += frameElapsedTime;
@@ -135,8 +135,8 @@ class Player : public Character {
             }
         }
 
-        this->projectiles->forEach([](Projectile &projectile, int idx) {
-            projectile.update();
+        this->projectiles->forEach([&infiniteMap, &boundaryWidth, &boundaryHeight](Projectile &projectile, int idx) {
+            projectile.update(infiniteMap, boundaryWidth, boundaryHeight);
         });
 
         this->aoeTimeElapsed += frameElapsedTime;
@@ -146,22 +146,42 @@ class Player : public Character {
         }
 
         if (this->canvas->keyPressed('A')) {
-            this->position.x = max(this->position.x - this->speed, 0);
+            if (infiniteMap) {
+                this->position.x -= this->speed;
+                this->position.x = ((this->position.x % boundaryWidth) + boundaryWidth) % boundaryWidth;
+            } else {
+                this->position.x = max(this->position.x - this->speed, 0);
+            }
             selectNextFrame('A', this->rotationImages.west);
             return;
         }
         if (this->canvas->keyPressed('D')) {
-            this->position.x = min(this->position.x + this->speed, boundaryWidth - this->currentFrame->width);
+            if (infiniteMap) {
+                this->position.x += this->speed;
+                this->position.x = ((this->position.x % boundaryWidth) + boundaryWidth) % boundaryWidth;
+            } else {
+                this->position.x = min(this->position.x + this->speed, boundaryWidth - this->currentFrame->width);
+            }
             selectNextFrame('D', this->rotationImages.east);
             return;
         }
         if (this->canvas->keyPressed('W')) {
-            this->position.y = max(this->position.y - this->speed, 0);
+            if (infiniteMap) {
+                this->position.y -= this->speed;
+                this->position.y = ((this->position.y % boundaryHeight) + boundaryHeight) % boundaryHeight;
+            } else {
+                this->position.y = max(this->position.y - this->speed, 0);
+            }
             selectNextFrame('W', this->rotationImages.north);
             return;
         }
         if (this->canvas->keyPressed('S')) {
-            this->position.y = min(this->position.y + this->speed, boundaryHeight - this->currentFrame->height);
+            if (infiniteMap) {
+                this->position.y += this->speed;
+                this->position.y = ((this->position.y % boundaryHeight) + boundaryHeight) % boundaryHeight;
+            } else {
+                this->position.y = min(this->position.y + this->speed, boundaryHeight - this->currentFrame->height);
+            }
             selectNextFrame('S', this->rotationImages.south);
             return;
         }

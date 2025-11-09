@@ -34,4 +34,9 @@ class Camera {
             this->position.y = possibleY;
         }
     }
+
+    void updateInfinite(Position playerPosition) {
+        this->position.x = playerPosition.x - OFFSET_X;
+        this->position.y = playerPosition.y - OFFSET_Y;
+    };
 };

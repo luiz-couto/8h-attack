@@ -162,6 +162,32 @@ class Terrain {
         }
     }
 
+    void drawTerrainInfinite(Position cameraPosition) {
+        for (int i=0; i < this->canvas->getHeight(); i++) {
+            for (int j=0; j < this->canvas->getWidth(); j++) {
+                int worldPixelX = cameraPosition.x + j;
+                int worldPixelY = cameraPosition.y + i;
+
+                int tileX = (worldPixelX / TILE_SIZE) % this->width;
+                int tileY = (worldPixelY / TILE_SIZE) % this->height;
+                if (tileX < 0) tileX += this->width;
+                if (tileY < 0) tileY += this->height;
+
+                int tileKind = this->terrain[tileY][tileX];
+                GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
+
+                int tileImageX = worldPixelX % TILE_SIZE;
+                int tileImageY = worldPixelY % TILE_SIZE;
+                if (tileImageX < 0) tileImageX += TILE_SIZE;
+                if (tileImageY < 0) tileImageY += TILE_SIZE;
+
+                if (tileImage->alphaAt(tileImageX, tileImageY) > 0) {
+                    canvas->draw(j, i, tileImage->at(tileImageX, tileImageY));
+                }
+            }
+        }
+    }
+
     void printTerrainRaw() {
         for (int i=0; i<this->height; i++) {
             for (int j=0; j<this->width; j++) {

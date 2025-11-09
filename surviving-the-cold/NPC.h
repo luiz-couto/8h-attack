@@ -30,7 +30,7 @@ class NPC : public Character {
         this->currentFrame = this->frames[0];
     }
 
-    void update(Position *playerPos) {
+    void update(Position *playerPos, bool isMapInfinite, int boundaryWidth, int boundaryHeight) {
         this->timeElapsed += this->timer.dt();
         if (this->timeElapsed > TIME_BETWEEN_FRAMES) {
             this->frameCount++;
@@ -53,6 +53,11 @@ class NPC : public Character {
 
             this->position.x += floor(unitX * this->speed);
             this->position.y += floor(unitY * this->speed);
+
+            if (isMapInfinite) {
+                this->position.x = ((this->position.x % boundaryWidth) + boundaryWidth) % boundaryWidth;
+                this->position.y = ((this->position.y % boundaryHeight) + boundaryHeight) % boundaryHeight;
+            }
             return;
         }
     }

@@ -16,9 +16,11 @@ class Map {
     RigidBody **objects;
     
     public:
+    bool isInfinite;
     int numberOfObjects = 0;
-    Map(GamesEngineeringBase::Window *canvas, std::string mapNumber) {
+    Map(GamesEngineeringBase::Window *canvas, std::string mapNumber, bool isInfinite = false) {
         this->canvas = canvas;
+        this->isInfinite = isInfinite;
 
         Terrain *terrain = new Terrain(canvas);
         terrain->loadTerrain("assets/terrains/" + mapNumber + ".terrain");
@@ -68,10 +70,14 @@ class Map {
     }
 
     void draw(Position cameraPosition) {
-        this->terrain->drawTerrain(cameraPosition);
-
-        for (int i=0; i<this->numberOfObjects; i++) {
-            this->objects[i]->draw(cameraPosition);
+        if (this->isInfinite) {
+            this->terrain->drawTerrainInfinite(cameraPosition);
+        } else {
+            this->terrain->drawTerrain(cameraPosition);
+            for (int i=0; i<this->numberOfObjects; i++) {
+                this->objects[i]->draw(cameraPosition);
+            }
         }
+
     }
 };

@@ -35,9 +35,14 @@ class Projectile : public RigidBody {
         this->dirY = dy / distance;
     }
 
-    void update() {
+    void update(bool isMapInfinite, int boundaryWidth, int boundaryHeight) {
         this->position.x += this->dirX * this->speed;
         this->position.y += this->dirY * this->speed;
+
+        if (isMapInfinite) {
+            this->position.x = ((this->position.x % boundaryWidth) + boundaryWidth) % boundaryWidth;
+            this->position.y = ((this->position.y % boundaryHeight) + boundaryHeight) % boundaryHeight;
+        }
     }
 
     bool isOutOfBounds(int terrainWidth, int terrainHeight) {
