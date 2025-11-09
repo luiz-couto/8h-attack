@@ -70,7 +70,8 @@ class PDList {
         return this->nextFreeIdx;
     }
 
-    void sort(bool (*compareFunc)(T&, T&)) {
+    template<typename Func>
+    void sort(Func compareFunc) {
         for (int i = 0; i < nextFreeIdx - 1; i++) {
             for (int j = 0; j < nextFreeIdx - i - 1; j++) {
                 if (!compareFunc(*list[j], *list[j + 1])) {
