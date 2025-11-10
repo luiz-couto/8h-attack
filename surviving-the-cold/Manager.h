@@ -143,39 +143,15 @@ class Manager {
         return npcPosition;
     }
 
-    void update(bool shouldUpdate) {
-        if (!shouldUpdate) {
-            return;
-        }
-
-        if (!this->player->isAlive()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1200));
-            *this->gameState = GAME_STATE::GAME_OVER;
-            return;
-        }
-
-        if (this->canvas->keyPressed('P')) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            *this->gameState = GAME_STATE::PAUSE_MENU;
-            return;
-        }
-
-        float timeElapsed = this->timer.dt();
-
-        Position playerPos = this->player->getPosition();
-        RigidBody **mapObjects = this->map->getObjects();
-        
-        // update camera
-        this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
-
-        // generate power-ups
+    void generatePowerUps(float timeElapsed) {
         this->timeElapsedPowerUp += timeElapsed;
         if (this->timeElapsedPowerUp > this->powerUpCooldown) {
             this->createPowerUp();
             this->timeElapsedPowerUp = 0.0f;
         }
-
-        // generate new static NPCs
+    }
+    
+    void generateNewStaticNPC(float timeElapsed) {
         this->timeElapsedStaticNPCs += timeElapsed;
         int staticNPCIdx = DIFFERENT_NPCS_NUM - 1;
         if (this->timeElapsedStaticNPCs > this->staticNpcCooldown) {            
@@ -190,8 +166,9 @@ class Manager {
             ));
             this->timeElapsedStaticNPCs = 0.0f;
         }
+    }
 
-        // generate new NPCs
+    void generateNewNPC(float timeElapsed) {
         this->timeElapsedNPCs += timeElapsed;
         int randomNPCIdx = RandomInt(0, DIFFERENT_NPCS_NUM - 2).generate();
         if (this->timeElapsedNPCs > this->npcCooldown) {            
@@ -208,12 +185,13 @@ class Manager {
             this->timeElapsedNPCs = 0.0f;
             this->npcCooldown *= 0.99f;
         }
+    }
 
-        // update NPCs
+    void updateNPCs() {
         PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
         int &score = this->score;
         Player *player = this->player;
-        npcs->forEach([&playerPos, &npcs, &score, &player](NPC &npc, int idx) {
+        npcs->forEach([&npcs, &score, &player](NPC &npc, int idx) {
             if (!npc.isAlive()) {
                 score += npc.damage;
                 npcs->deleteByIdx(idx);
@@ -222,11 +200,14 @@ class Manager {
                     NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
                     staticNPC->update(player);
                 } else {
-                    npc.update(&playerPos);
+                    Position playerPosition = player->getPosition();
+                    npc.update(&playerPosition);
                 }
             }
         });
-        
+    }
+
+    NPC* detectAndProcessPlayerCollisionsWithNPCs() {
         NPC *nearestNPC = this->npcs->at(0);
         Camera *camera = this->camera;
         if (nearestNPC != nullptr) {
@@ -274,18 +255,21 @@ class Manager {
                 }
             });
         }
+        return nearestNPC;
+    }
 
-        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
+    void checkPlayerCollisionsWithMapObjects() {
+        RigidBody **mapObjects = this->map->getObjects();
 
-        // check collisions with map objects
         for (int i=0; i<this->map->numberOfObjects; i++) {
             if (this->player->detectCollision(mapObjects[i])) {
                 this->player->processCollision(OBJECT_COLLISION, mapObjects[i]);
                 break;
             }
         }
+    }
 
-        // check collisions with terrain impassable tiles
+    void checkPlayerCollisionWithImpassableTiles() {
         Terrain* terrain = this->map->getTerrain();
         Vector<ImpassableTile*> impassableTiles = terrain->getImpassableTiles();
         for (int i=0; i<impassableTiles.getSize(); i++) {
@@ -295,8 +279,10 @@ class Manager {
                 break;
             }
         }
+    }
 
-        // check collisions with power-ups
+    void checkPlayerCollisionWithPowerUps() {
+        Player *player = this->player;
         PDList<RigidBody, POWERUP_LIMIT> *powerUps = this->powerUps;
         powerUps->forEach([&player, &powerUps](RigidBody &powerUp, int idx) {
             if (player->detectCollision(&powerUp)) {
@@ -304,6 +290,54 @@ class Manager {
                 powerUps->deleteByIdx(idx);
             }
         });
+    }
+
+    void update(bool shouldUpdate) {
+        if (!shouldUpdate) {
+            return;
+        }
+
+        if (!this->player->isAlive()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+            *this->gameState = GAME_STATE::GAME_OVER;
+            return;
+        }
+
+        if (this->canvas->keyPressed('P')) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            *this->gameState = GAME_STATE::PAUSE_MENU;
+            return;
+        }
+
+        float timeElapsed = this->timer.dt();
+        
+        // update camera
+        this->camera->update(this->player->getPosition(), this->map->getWidthInPixels(), this->map->getHeightInPixels());
+        // generate power-ups
+        this->generatePowerUps(timeElapsed);
+
+        // generate new static NPCs
+        this->generateNewStaticNPC(timeElapsed);
+
+        // generate new NPCs
+        this->generateNewNPC(timeElapsed);
+
+        // update NPCs
+        this->updateNPCs();
+        
+        // detect and process player related collisions. Also get nearest NPC
+        NPC* nearestNPC = this->detectAndProcessPlayerCollisionsWithNPCs();
+
+        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
+
+        // check collisions with map objects
+        this->checkPlayerCollisionsWithMapObjects();
+
+        // check collisions with terrain impassable tiles
+        this->checkPlayerCollisionWithImpassableTiles();
+
+        // check collisions with power-ups
+        this->checkPlayerCollisionWithPowerUps();
 
         // final player update
         this->player->update();
