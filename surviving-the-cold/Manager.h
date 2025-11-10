@@ -86,10 +86,13 @@ class Manager {
     Manager(GamesEngineeringBase::Window *canvas, std::string mapNumber, Player *player, PDList<NPC, NPCS_NUMBER> *npcs, Camera *camera, GAME_STATE *gameState) {
         this->canvas = canvas;
         this->gameState = gameState;
+        this->display = new Display(canvas);
+        this->FPSImage->load("assets/display/fps.png");
+        this->gameImage = new GameImage(canvas);
+
         this->player = player;
         this->mapNumber = mapNumber;
         this->npcs = npcs;
-
         this->camera = camera;
         this->map = new Map(this->canvas, this->mapNumber);
     }

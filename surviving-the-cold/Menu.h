@@ -205,6 +205,7 @@ void saveGame(Menu* menu) {
         << playerPos.x << " " 
         << playerPos.y << " "
         << player->speed << " "
+        << player->initialHealth << " "
         << player->health << " "
         << player->damage << "\n";
 
@@ -221,6 +222,7 @@ void saveGame(Menu* menu) {
             << npcPos.x << " " 
             << npcPos.y << " "
             << npc.speed << " "
+            << npc.initialHealth << " "
             << npc.health << " "
             << npc.damage << " "
             << npc.isNPCStatic() << "\n";
@@ -245,8 +247,8 @@ void loadGame(Menu *menu) {
     gameState >> cameraX >> cameraY;
 
     std::string playerName;
-    float playerX, playerY, playerSpeed, playerHealth, playerDamage;
-    gameState >> playerName >> playerX >> playerY >> playerSpeed >> playerHealth >> playerDamage;
+    float playerX, playerY, playerSpeed,  playerInitialHealth, playerHealth, playerDamage;
+    gameState >> playerName >> playerX >> playerY >> playerSpeed >> playerInitialHealth >> playerHealth >> playerDamage;
 
     std::cout << "Loaded Player: " << playerName << " at (" << playerX << ", " << playerY << ")\n";
     Player* player = new Player(
@@ -258,6 +260,7 @@ void loadGame(Menu *menu) {
         playerX,
         playerY
     );
+    player->initialHealth = playerInitialHealth;
 
     std::cout << "Creating Manager for loaded game...\n";
     std::cout << "Map Number: " << mapNumber << "\n";
@@ -275,8 +278,8 @@ void loadGame(Menu *menu) {
 
     for (int i = 0; i < numOfNPCs; i++) {
         std::string npcName;
-        float npcX, npcY, npcSpeed, npcHealth, npcDamage, isStatic;
-        gameState >> npcName >> npcX >> npcY >> npcSpeed >> npcHealth >> npcDamage >> isStatic;
+        float npcX, npcY, npcSpeed,  npcInitialHealth, npcHealth, npcDamage, isStatic;
+        gameState >> npcName >> npcX >> npcY >> npcSpeed >> npcInitialHealth >> npcHealth >> npcDamage >> isStatic;
 
         if (isStatic) {
             NPCStatic* staticNPC = new NPCStatic(
@@ -288,6 +291,7 @@ void loadGame(Menu *menu) {
                 npcY
             );
 
+            staticNPC->initialHealth = npcInitialHealth;
             manager->getNPCs()->add(staticNPC);
             continue;
         }
@@ -302,6 +306,7 @@ void loadGame(Menu *menu) {
             npcY
         );
 
+        npc->initialHealth = npcInitialHealth;
         manager->getNPCs()->add(npc);
     }
 
