@@ -65,13 +65,12 @@ int main() {
         // Accumulate time for 60 FPS updates
         frameAccumulator += deltaTime;
         bool shouldUpdate = false;
-        
-        // Check if we should update (at 60 FPS rate)
+
         if (frameAccumulator >= TARGET_FRAME_TIME) {
             shouldUpdate = true;
             frameAccumulator -= TARGET_FRAME_TIME;
             
-            // Prevent spiral of death: if far behind, reset
+            // If accumulator is high, reset
             if (frameAccumulator > TARGET_FRAME_TIME * 5) {
                 frameAccumulator = 0.0;
             }
