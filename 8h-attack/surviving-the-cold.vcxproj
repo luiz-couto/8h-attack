@@ -24,6 +24,7 @@
     <ProjectGuid>{c6c2d7f0-4dbd-4115-a68f-54d4d34e8fa1}</ProjectGuid>
     <RootNamespace>survivingthecold</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>8h-attack</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
