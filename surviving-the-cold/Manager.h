@@ -32,6 +32,9 @@
 
 #define BORDERS_OFFSET 150
 
+#define POWERUP_SPAWN_COOLDOWN 15.0f
+#define POWERUP_LIMIT 5
+
 std::string NPCS_NAMES[DIFFERENT_NPCS_NUM] = { "balle", "green", "red", "purple", "flames" };
 bool NPCS_IS_STATIC[DIFFERENT_NPCS_NUM] = { false, false, false, false, true };
 int NPCS_SPEEDS[DIFFERENT_NPCS_NUM] = { 3, 2, 2, 4, 0 };
@@ -47,6 +50,7 @@ class Manager {
     std::string mapNumber = MAP_NUMBER;
     Map *map;
     PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
+    PDList<RigidBody, POWERUP_LIMIT> *powerUps = new PDList<RigidBody, POWERUP_LIMIT>();
 
     GamesEngineeringBase::Timer timer = GamesEngineeringBase::Timer();
     
@@ -56,11 +60,15 @@ class Manager {
     float timeElapsedStaticNPCs = 0.0f;
     float staticNpcCooldown = STATIC_NPC_DEFAULT_COOLDOWN;
 
+    float timeElapsedPowerUp = 0.0f;
+    float powerUpCooldown = POWERUP_SPAWN_COOLDOWN;
+
     GAME_STATE *gameState;
     int score = 0;
 
     Display *display;
     GamesEngineeringBase::Image *FPSImage = new GamesEngineeringBase::Image();
+    GamesEngineeringBase::Image *powerUpImage = new GamesEngineeringBase::Image();
 
     public:
     Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
@@ -68,6 +76,7 @@ class Manager {
         this->gameState = gameState;
         this->display = new Display(canvas);
         this->FPSImage->load("assets/display/fps.png");
+        this->powerUpImage->load("assets/powerup/powerup.png");
         this->gameImage = new GameImage(canvas);
 
         this->player = new Player(
@@ -88,6 +97,7 @@ class Manager {
         this->gameState = gameState;
         this->display = new Display(canvas);
         this->FPSImage->load("assets/display/fps.png");
+        this->powerUpImage->load("assets/powerup/powerup.png");
         this->gameImage = new GameImage(canvas);
 
         this->score = score;
@@ -103,6 +113,17 @@ class Manager {
         delete this->camera;
         delete this->map;
         delete this->npcs;
+    }
+
+    void createPowerUp() {
+        Position cameraPosition = this->camera->getPosition();
+        RigidBody *powerUp = new RigidBody(
+            this->canvas,
+            RandomInt(cameraPosition.x, cameraPosition.x + this->canvas->getWidth()).generate(),
+            RandomInt(cameraPosition.y, cameraPosition.y + this->canvas->getHeight()).generate(),
+            this->powerUpImage
+        );
+        this->powerUps->add(powerUp);
     }
 
     Position generateNewNPCPosition(int borderOffset) {
@@ -146,6 +167,13 @@ class Manager {
         
         // update camera
         this->camera->update(playerPos, this->map->getWidthInPixels(), this->map->getHeightInPixels());
+
+        // generate power-ups
+        this->timeElapsedPowerUp += timeElapsed;
+        if (this->timeElapsedPowerUp > this->powerUpCooldown) {
+            this->createPowerUp();
+            this->timeElapsedPowerUp = 0.0f;
+        }
 
         // generate new static NPCs
         this->timeElapsedStaticNPCs += timeElapsed;
@@ -268,6 +296,15 @@ class Manager {
             }
         }
 
+        // check collisions with power-ups
+        PDList<RigidBody, POWERUP_LIMIT> *powerUps = this->powerUps;
+        powerUps->forEach([&player, &powerUps](RigidBody &powerUp, int idx) {
+            if (player->detectCollision(&powerUp)) {
+                player->processCollision(POWERUP_COLLISION, &powerUp);
+                powerUps->deleteByIdx(idx);
+            }
+        });
+
         // final player update
         this->player->update();
     }
@@ -276,6 +313,9 @@ class Manager {
         Position cameraPosition = this->camera->getPosition();
 
         this->map->draw(cameraPosition);
+        this->powerUps->forEach([&cameraPosition, this](RigidBody &powerUp, int idx) {
+            powerUp.draw(cameraPosition);
+        });
         this->player->draw(cameraPosition);
         this->player->drawProjectiles(cameraPosition, this->map->getWidthInPixels(), this->map->getHeightInPixels());
 

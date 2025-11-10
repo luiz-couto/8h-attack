@@ -16,10 +16,13 @@
 
 #define PROJECTILES_ARR_COUNT 100
 #define PROJECTILE_DEFAULT_COOLDOWN 0.2f
+#define PROJECTILE_POWERUP_COOLDOWN 0.05f
 
 #define START_AOE_DAMAGE 30
 #define START_AOE_NPCS_AFFECTED 10
 #define AOE_COOLDOWN_TIME 10.0f
+
+#define POWERUP_DURATION 10.0f
 
 struct Rotation {
     GamesEngineeringBase::Image *south[5];
@@ -41,6 +44,9 @@ class Player : public Character {
     float cooldownTimeElapsed = 0.0f;
 
     GamesEngineeringBase::Image *aoeBarFrame = new GamesEngineeringBase::Image();
+
+    bool isPowerUpActive = false;
+    float powerUpTimeElapsed = 0.0f;
 
     public:
     int aoeDamage = START_AOE_DAMAGE;
@@ -90,6 +96,10 @@ class Player : public Character {
 
     PDList<Projectile>* getProjectilesArray() {
         return this->projectiles;
+    }
+
+    void setProjectileCooldown(float cooldown) {
+        this->projectileCooldown = cooldown;
     }
 
     void loadAnimationFrames(GamesEngineeringBase::Image *group[5], std::string direction) {
@@ -143,6 +153,15 @@ class Player : public Character {
         if (this->aoeTimeElapsed > this->aoeCooldownTime && this->canvas->keyPressed(' ')) {
             this->isAOEActivated = true;
             this->aoeTimeElapsed = 0.0f;
+        }
+
+        if (this->isPowerUpActive) {
+            this->powerUpTimeElapsed += frameElapsedTime;
+            if (this->powerUpTimeElapsed > POWERUP_DURATION) {
+                this->setProjectileCooldown(PROJECTILE_DEFAULT_COOLDOWN);
+                this->isPowerUpActive = false;
+                this->powerUpTimeElapsed = 0.0f;
+            }
         }
 
         if (this->canvas->keyPressed('A')) {
@@ -203,13 +222,19 @@ class Player : public Character {
             case TERRAIN_COLLISION:
                 this->setPositionAsLastPosition();
                 break;
-            case PROJECTILE_COLLISION:
+            case PROJECTILE_COLLISION: {
                 Projectile *projectile = static_cast<Projectile*>(rigidBody);
                 if (this->health > 0) {
                     this->health -= projectile->getDamage();
                 }
                 this->hadDamage = true;
                 break;
+            }
+            case POWERUP_COLLISION: {
+                this->setProjectileCooldown(PROJECTILE_POWERUP_COOLDOWN);
+                this->isPowerUpActive = true;
+                break;
+            }
         }
     }
 
