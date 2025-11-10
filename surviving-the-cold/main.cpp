@@ -16,6 +16,9 @@ using Clock = std::chrono::high_resolution_clock;
 
 #define GAME_NAME "8H Attack!"
 
+#define TARGET_FPS 60
+#define TARGET_FRAME_TIME (1.0 / TARGET_FPS)
+
 int main() {
     GamesEngineeringBase::Window canvas;
     canvas.create(WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME);
@@ -34,6 +37,9 @@ int main() {
     double deltaSum = 0.0;
     int frameSinceLastUpdate = 0;
 
+    // Frame accumulator for 60 FPS updates
+    double frameAccumulator = 0.0;
+
     while (running)
     {   
 
@@ -44,7 +50,7 @@ int main() {
         totalTime += deltaTime;
         frameCount++;
 
-        // accumulate frame times
+        // accumulate frame times for FPS calculation
         deltaSum += deltaTime;
         frameSinceLastUpdate++;
 
@@ -56,9 +62,24 @@ int main() {
             deltaSum = 0.0;
         }
 
+        // Accumulate time for 60 FPS updates
+        frameAccumulator += deltaTime;
+        bool shouldUpdate = false;
+        
+        // Check if we should update (at 60 FPS rate)
+        if (frameAccumulator >= TARGET_FRAME_TIME) {
+            shouldUpdate = true;
+            frameAccumulator -= TARGET_FRAME_TIME;
+            
+            // Prevent spiral of death: if far behind, reset
+            if (frameAccumulator > TARGET_FRAME_TIME * 5) {
+                frameAccumulator = 0.0;
+            }
+        }
+
         // Check for input and updates
         if (gameState == GAME_STATE::IN_GAME) {
-            menu->manager->update();
+            menu->manager->update(shouldUpdate);
         } else {
             menu->update();
         }
@@ -80,7 +101,7 @@ int main() {
         }
 
         // Display the frame on the screen. This must be called once the frame
-        //is finished in order to display the frame.
+        // is finished in order to display the frame.
         canvas.present();
     }
     return 0;

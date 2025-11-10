@@ -27,7 +27,7 @@
 #define NPC_DEFAULT_COOLDOWN 1.5f
 #define STATIC_NPC_DEFAULT_COOLDOWN 5.0f
 
-#define NPCS_NUMBER 60
+#define NPCS_NUMBER 300
 #define DIFFERENT_NPCS_NUM 5
 
 #define BORDERS_OFFSET 150
@@ -118,7 +118,11 @@ class Manager {
         return npcPosition;
     }
 
-    void update() {
+    void update(bool shouldUpdate) {
+        if (!shouldUpdate) {
+            return;
+        }
+
         if (!this->player->isAlive()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(1200));
             *this->gameState = GAME_STATE::GAME_OVER;
@@ -170,7 +174,7 @@ class Manager {
                 npcPosition.y
             ));
             this->timeElapsedNPCs = 0.0f;
-            this->npcCooldown *= 0.98f;
+            this->npcCooldown *= 0.99f;
         }
 
         // update NPCs

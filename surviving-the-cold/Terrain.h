@@ -25,7 +25,7 @@ std::string getTileFile(int tileKind) {
     return "assets/tiles/" + std::to_string(tileKind) + ".png";
 }
 
-int IMPASSABLE_TILES[IMPASSABLE_TILES_COUNT] = {2,3}; // Water
+int IMPASSABLE_TILES[IMPASSABLE_TILES_COUNT] = {2,3}; // Water, tower
 
 class ImpassableTile {
     private:
@@ -57,11 +57,11 @@ class ImpassableTile {
 // Terrain file = *.terrain
 // First line indicates the size MxN
 // The others indicate which tiles to use
-// The tiles data is stored to avoid loading them again all the time
+// The terrain colors are pre-computed and stored directly for performance
 class Terrain {
     private:
     GamesEngineeringBase::Window* canvas;
-    int** terrain;
+    unsigned char*** terrainColors;
     GamesEngineeringBase::Image* tilesData[NUMBER_OF_TILES];
     GameImage* gameImage;
     Vector<ImpassableTile*> impassableTiles;
@@ -70,7 +70,7 @@ class Terrain {
     int width, height;
     Terrain(GamesEngineeringBase::Window *canvas) {
         this->canvas = canvas;
-        this->terrain = nullptr;
+        this->terrainColors = nullptr;
         this->gameImage = new GameImage(canvas);
         for (int i=0; i<NUMBER_OF_TILES; i++) {
             this->tilesData[i] = new GamesEngineeringBase::Image();
@@ -79,16 +79,30 @@ class Terrain {
 
     void allocateTerrainMemory() {
         freeTerrainMemory();
-        this->terrain = new int*[this->height];
-        for (int i = 0; i < this->height; ++i)
-            this->terrain[i] = new int[this->width];
+
+        int totalPixelsHeight = this->height * TILE_SIZE;
+        int totalPixelsWidth = this->width * TILE_SIZE;
+        this->terrainColors = new unsigned char**[totalPixelsHeight];
+
+        for (int i = 0; i < totalPixelsHeight; ++i) {
+            this->terrainColors[i] = new unsigned char*[totalPixelsWidth];
+            for (int j = 0; j < totalPixelsWidth; ++j) {
+                this->terrainColors[i][j] = new unsigned char[4]; // RGBA
+            }
+        }
     }
 
     void freeTerrainMemory() {
-        if (terrain != NULL) {
-            for (int i = 0; i < this->height; ++i)
-                delete [] terrain[i];
-            delete [] terrain;
+        if (terrainColors != NULL) {
+            int totalPixelsHeight = this->height * TILE_SIZE;
+            for (int i = 0; i < totalPixelsHeight; i++) {
+                int totalPixelsWidth = this->width * TILE_SIZE;
+                for (int j = 0; j < totalPixelsWidth; j++) {
+                    delete [] terrainColors[i][j];
+                }
+                delete [] terrainColors[i];
+            }
+            delete [] terrainColors;
         }
     }
 
@@ -118,7 +132,16 @@ class Terrain {
             for (int i=0; i<this->width; i++) {
                 int tileKind;
                 stringStream >> tileKind;
-                this->terrain[j][i] = tileKind;
+
+                GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
+                for (int ty = 0; ty < TILE_SIZE; ty++) {
+                    for (int tx = 0; tx < TILE_SIZE; tx++) {
+                        int pixelY = j * TILE_SIZE + ty;
+                        int pixelX = i * TILE_SIZE + tx;
+                        this->terrainColors[pixelY][pixelX] = tileImage->at(tx, ty);
+                    }
+                }
+                
                 if (isImpassable(tileKind)) {
                     ImpassableTile* impTile = new ImpassableTile(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                     this->impassableTiles.add(impTile);
@@ -146,28 +169,9 @@ class Terrain {
                 int worldPixelX = cameraPosition.x + j;
                 int worldPixelY = cameraPosition.y + i;
 
-                int tileX = worldPixelX / TILE_SIZE;
-                int tileY = worldPixelY / TILE_SIZE;
-
-                int tileKind = this->terrain[tileY][tileX];
-                GamesEngineeringBase::Image* tileImage = getTileImage(tileKind);
-
-                int tileImageX = worldPixelX % TILE_SIZE;
-                int tileImageY = worldPixelY % TILE_SIZE;
-
-                if (tileImage->alphaAt(tileImageX, tileImageY) > 0) {
-                    canvas->draw(j, i, tileImage->at(tileImageX, tileImageY));
-                }
+                unsigned char* color = this->terrainColors[worldPixelY][worldPixelX];
+                canvas->draw(j, i, color);
             }
-        }
-    }
-
-    void printTerrainRaw() {
-        for (int i=0; i<this->height; i++) {
-            for (int j=0; j<this->width; j++) {
-                std::cout << this->terrain[i][j] << "\t";
-            }
-            std::cout << std::endl;
         }
     }
 

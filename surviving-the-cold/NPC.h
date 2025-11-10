@@ -8,6 +8,7 @@
 
 #define START_SPEED 20
 #define TIME_BETWEEN_FRAMES 0.20f
+#define AOE_DAMAGE_MULTIPLIER 5
 
 class NPC : public Character {
     protected:
@@ -70,7 +71,7 @@ class NPC : public Character {
             case AOE_PLAYER_ATTACK: {
                 Character *player = static_cast<Character*>(rigidBody);
                 if (this->health > 0) {
-                    this->health -= player->damage * 3;
+                    this->health -= player->damage * AOE_DAMAGE_MULTIPLIER;
                 }
                 this->hadDamage = true;
                 break;

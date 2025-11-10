@@ -11,7 +11,7 @@
 #include "Projectile.h"
 #include "PDList.h"
 
-#define LOADING_FRAME 3
+#define LOADING_FRAME 5
 #define IDLE_FRAME_TIME 0.3f
 
 #define PROJECTILES_ARR_COUNT 100
