@@ -3,6 +3,7 @@
 #include "NPC.h"
 #include "PDList.h"
 #include "Position.h"
+#include "Player.h"
 
 #define PROJECTILE_DEFAULT_COOLDOWN 1.0f
 #define PROJECTILE_SPEED 4
@@ -19,13 +20,13 @@ class NPCStatic : public NPC {
         this->isStatic = true;
     }
 
-    void fireNextProjectile(int targetX, int targetY) {
+    void fireNextProjectile(Player *player) {
         this->projectiles->add(new Projectile(
             this->canvas,
-            this->position.x,
-            this->position.y,
-            targetX,
-            targetY,
+            this->getCenterPosition().x,
+            this->getCenterPosition().y,
+            player->getCenterPosition().x,
+            player->getCenterPosition().y,
             "0",
             this->damage,
             PROJECTILE_SPEED
@@ -47,13 +48,13 @@ class NPCStatic : public NPC {
         return this->projectiles;
     }
 
-    void update(Position *playerPosition) {
+    void update(Player *player) {
         float frameElapsedTime = this->timer.dt();
         
         this->cooldownTimeElapsed += frameElapsedTime;
         if (cooldownTimeElapsed > projectileCooldown) {
             this->cooldownTimeElapsed = 0.0f;
-            this->fireNextProjectile(playerPosition->x, playerPosition->y);
+            this->fireNextProjectile(player);
         }
 
         this->projectiles->forEach([](Projectile &projectile, int idx) {

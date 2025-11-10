@@ -184,14 +184,15 @@ class Manager {
         // update NPCs
         PDList<NPC, NPCS_NUMBER> *npcs = this->npcs;
         int &score = this->score;
-        npcs->forEach([&playerPos, &npcs, &score](NPC &npc, int idx) {
+        Player *player = this->player;
+        npcs->forEach([&playerPos, &npcs, &score, &player](NPC &npc, int idx) {
             if (!npc.isAlive()) {
                 score += npc.damage;
                 npcs->deleteByIdx(idx);
             } else {
                 if (npc.isNPCStatic()) {
                     NPCStatic *staticNPC = static_cast<NPCStatic*>(&npc);
-                    staticNPC->update(&playerPos);
+                    staticNPC->update(player);
                 } else {
                     npc.update(&playerPos);
                 }

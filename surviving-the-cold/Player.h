@@ -65,13 +65,13 @@ class Player : public Character {
         this->aoeBarFrame->load("assets/aoe/progressBar.png");
     }
 
-    void fireNextProjectile(int targetX, int targetY) {
+    void fireNextProjectile(NPC *targetNPC) {
         this->projectiles->add(new Projectile(
             this->canvas,
-            this->position.x,
-            this->position.y,
-            targetX,
-            targetY,
+            this->getCenterPosition().x,
+            this->getCenterPosition().y,
+            targetNPC->getCenterPosition().x,
+            targetNPC->getCenterPosition().y,
             "1",
             20
         ));
@@ -131,7 +131,7 @@ class Player : public Character {
         if (cooldownTimeElapsed > projectileCooldown) {
             if (nearestNPC != nullptr && nearestNPC->isOnCameraView(cameraPosition)) {
                 this->cooldownTimeElapsed = 0.0f;
-                this->fireNextProjectile(nearestNPC->getCenterPosition().x, nearestNPC->getCenterPosition().y);
+                this->fireNextProjectile(nearestNPC);
             }
         }
 
