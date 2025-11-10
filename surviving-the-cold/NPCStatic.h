@@ -8,6 +8,7 @@
 #define PROJECTILE_DEFAULT_COOLDOWN 1.0f
 #define PROJECTILE_SPEED 4
 
+// NPCStatic class derived from NPC that fires projectiles at the player
 class NPCStatic : public NPC {
     private:
     PDList<Projectile> *projectiles = new PDList<Projectile>();

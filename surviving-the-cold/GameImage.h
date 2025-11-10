@@ -3,7 +3,7 @@
 #include <iostream>
 #include "GamesEngineeringBase.h"
 
-
+// GameImage class to safely draw images into the window canvas
 class GameImage {
     private:
     GamesEngineeringBase::Window* canvas;

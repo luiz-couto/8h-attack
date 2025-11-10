@@ -3,7 +3,14 @@
 
 #define DEFAULT_MAX_SIZE 100
 
-// PDList - Pseudo Dynamic List
+// PDList - Pseudo Dynamic List - Fixed size list with dynamic behavior. Elements initially set to nullptr.
+// 1. Always keep the index to the next available space.
+// 2. It is always organized - which means that in any point of time it will always have
+// the pointers with data coming first, and then pointers to nullptrs coming next. 
+// his makes the index to next available space also being the current size of the list.
+// 3. When deleting an item, we delete the pointer, set it to nullptr, and then shift all the
+// pointers after it to the left by one position. This way we keep the list organized at
+// all times.
 template<typename T, int MAX_SIZE = DEFAULT_MAX_SIZE>
 class PDList {
     private:

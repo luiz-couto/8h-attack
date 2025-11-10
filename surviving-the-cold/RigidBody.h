@@ -17,6 +17,8 @@ enum COLLISION_KIND {
     POWERUP_COLLISION
 };
 
+// RigidBody base class for all "physical" entities in the game
+// It provides position, collision detection, distance calculation and drawing capabilities
 class RigidBody {
     protected:
     GamesEngineeringBase::Window* canvas;

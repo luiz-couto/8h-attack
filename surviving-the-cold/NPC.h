@@ -10,6 +10,10 @@
 #define TIME_BETWEEN_FRAMES 0.20f
 #define AOE_DAMAGE_MULTIPLIER 4
 
+// NPC class derived from Character
+// Update function responsible for animation and movement towards player
+// Draw function inherited from Character. It has 3 different frames for animation
+// ProcessCollision function handles projectile hit and AOE attack
 class NPC : public Character {
     protected:
     GamesEngineeringBase::Image *frames[3];

@@ -6,6 +6,7 @@
 
 #define MAX_DIGITS 6
 
+// Display class to render numbers on the screen using images for each digit
 class Display {
     private:
     GameImage* gameImage;

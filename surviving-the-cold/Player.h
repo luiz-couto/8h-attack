@@ -23,6 +23,8 @@
 
 #define POWERUP_DURATION 10.0f
 
+
+// Rotation struct to hold animation frames for each direction
 struct Rotation {
     GamesEngineeringBase::Image *south[5];
     GamesEngineeringBase::Image *north[5];
@@ -30,6 +32,11 @@ struct Rotation {
     GamesEngineeringBase::Image *west[5];
 };
 
+
+// Player class derived from Character
+// Update function responsible for handling movement, projectiles, AOE, and power-ups. Also selecting animation frames
+// ProcessCollision function handles NPCs, Impassable terrain, Objects, Projectiles and PowerUps
+// DrawAOEBar function to draw AOE cooldown bar
 class Player : public Character {
     private:
     Rotation rotationImages;

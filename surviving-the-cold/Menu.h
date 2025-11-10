@@ -59,6 +59,9 @@ MenuActions GameOverMenu = {
     emptyAction
 };
 
+// Menu class to handle different menus in the game
+// Main Menu, Pause Menu, Game Over Menu
+// It handles menu navigation and saving/loading game state
 class Menu {
     private:
     GameImage *gameImage;

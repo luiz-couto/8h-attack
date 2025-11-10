@@ -57,7 +57,7 @@ class ImpassableTile {
 // Terrain file = *.terrain
 // First line indicates the size MxN
 // The others indicate which tiles to use
-// The terrain colors are pre-computed and stored directly for performance
+// The terrain colors are stored directly for performance
 class Terrain {
     private:
     GamesEngineeringBase::Window* canvas;

@@ -10,6 +10,10 @@
 #define HEALTH_BAR_WIDTH 50
 #define HEALTH_BAR_HEIGHT 5
 
+// Character is a broader class used to encapsulate the data and the functions regarding Player and NPCs. 
+// The data includes the current frame image, the name (used to load the character sprites), speed, health and damage. 
+// The functions includes a draw function, responsible for drawing the character given the camera position.
+// The subtraction in the draw function converts world coordinates to screen coordinates
 class Character : public RigidBody {
     public:
     std::string name;
