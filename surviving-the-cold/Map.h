@@ -9,6 +9,7 @@
 #define NUMBER_OF_OBJECTS 1
 #define TILE_SIZE 32
 
+// Map class composed of a Terrain and an array of RigidBody objects
 class Map {
     private:
     GamesEngineeringBase::Window *canvas;
