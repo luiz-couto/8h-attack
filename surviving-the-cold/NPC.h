@@ -8,7 +8,7 @@
 
 #define START_SPEED 20
 #define TIME_BETWEEN_FRAMES 0.20f
-#define AOE_DAMAGE_MULTIPLIER 5
+#define AOE_DAMAGE_MULTIPLIER 4
 
 class NPC : public Character {
     protected:

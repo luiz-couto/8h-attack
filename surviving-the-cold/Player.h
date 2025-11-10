@@ -18,7 +18,6 @@
 #define PROJECTILE_DEFAULT_COOLDOWN 0.2f
 #define PROJECTILE_POWERUP_COOLDOWN 0.05f
 
-#define START_AOE_DAMAGE 30
 #define START_AOE_NPCS_AFFECTED 10
 #define AOE_COOLDOWN_TIME 10.0f
 
@@ -49,7 +48,6 @@ class Player : public Character {
     float powerUpTimeElapsed = 0.0f;
 
     public:
-    int aoeDamage = START_AOE_DAMAGE;
     int aoeNPCSAffected = START_AOE_NPCS_AFFECTED;
     bool isAOEActivated = false;
     float aoeCooldownTime = AOE_COOLDOWN_TIME;
@@ -134,9 +132,7 @@ class Player : public Character {
         this->position = this->lastPosition;
     }
 
-    void reactToMovementKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition) {
-        float frameElapsedTime = this->timer.dt();
-
+    void updateProjectiles(float frameElapsedTime, NPC *nearestNPC, Position cameraPosition) {
         this->cooldownTimeElapsed += frameElapsedTime;
         if (cooldownTimeElapsed > projectileCooldown) {
             if (nearestNPC != nullptr && nearestNPC->isOnCameraView(cameraPosition)) {
@@ -148,13 +144,17 @@ class Player : public Character {
         this->projectiles->forEach([](Projectile &projectile, int idx) {
             projectile.update();
         });
+    }
 
+    void updateAOE(float frameElapsedTime) {
         this->aoeTimeElapsed += frameElapsedTime;
         if (this->aoeTimeElapsed > this->aoeCooldownTime && this->canvas->keyPressed(' ')) {
             this->isAOEActivated = true;
             this->aoeTimeElapsed = 0.0f;
         }
+    }
 
+    void updatePowerUp(float frameElapsedTime) {
         if (this->isPowerUpActive) {
             this->powerUpTimeElapsed += frameElapsedTime;
             if (this->powerUpTimeElapsed > POWERUP_DURATION) {
@@ -163,7 +163,9 @@ class Player : public Character {
                 this->powerUpTimeElapsed = 0.0f;
             }
         }
+    }
 
+    void reactToMovementInputKeys(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition) {
         if (this->canvas->keyPressed('A')) {
             this->position.x = max(this->position.x - this->speed, 0);
             selectNextFrame('A', this->rotationImages.west);
@@ -184,7 +186,9 @@ class Player : public Character {
             selectNextFrame('S', this->rotationImages.south);
             return;
         }
+    }
 
+    void checkForIdleState(float frameElapsedTime) {
         this->timeElapsed += frameElapsedTime;
         if (timeElapsed > IDLE_FRAME_TIME) {
             this->frameCount = 0;
@@ -204,6 +208,16 @@ class Player : public Character {
             }
             this->timeElapsed = 0.0f;
         }
+    }
+
+    void update(int boundaryWidth, int boundaryHeight, NPC *nearestNPC, Position cameraPosition) {
+        float frameElapsedTime = this->timer.dt();
+
+        this->updateProjectiles(frameElapsedTime, nearestNPC, cameraPosition);
+        this->updateAOE(frameElapsedTime);
+        this->updatePowerUp(frameElapsedTime);
+        this->reactToMovementInputKeys(boundaryWidth, boundaryHeight, nearestNPC, cameraPosition);
+        this->checkForIdleState(frameElapsedTime);
     }
 
     void processCollision(COLLISION_KIND kind, RigidBody *rigidBody) {
@@ -238,7 +252,7 @@ class Player : public Character {
         }
     }
 
-    void update() {
+    void setLastPosition() {
         this->lastPosition = this->position;
     }
 

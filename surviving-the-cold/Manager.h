@@ -313,6 +313,7 @@ class Manager {
         
         // update camera
         this->camera->update(this->player->getPosition(), this->map->getWidthInPixels(), this->map->getHeightInPixels());
+        
         // generate power-ups
         this->generatePowerUps(timeElapsed);
 
@@ -328,7 +329,8 @@ class Manager {
         // detect and process player related collisions. Also get nearest NPC
         NPC* nearestNPC = this->detectAndProcessPlayerCollisionsWithNPCs();
 
-        this->player->reactToMovementKeys(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
+        // update player
+        this->player->update(this->map->getWidthInPixels(), this->map->getHeightInPixels(), nearestNPC, camera->getPosition());
 
         // check collisions with map objects
         this->checkPlayerCollisionsWithMapObjects();
@@ -340,7 +342,7 @@ class Manager {
         this->checkPlayerCollisionWithPowerUps();
 
         // final player update
-        this->player->update();
+        this->player->setLastPosition();
     }
 
     void draw(double fps) {
