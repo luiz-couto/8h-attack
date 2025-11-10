@@ -189,8 +189,8 @@ void saveGame(Menu* menu) {
     std::cout << "Saving game..." << "\n";
     std::ofstream gameState("assets/saves/0.gamestate");
 
-    // first line is map number
-    gameState << menu->manager->getMapNumber() << "\n";
+    // first line is map number and score
+    gameState << menu->manager->getMapNumber() << " " << menu->manager->getScore() << "\n";
 
     // second line is camera position
     Position cameraPos = menu->manager->getCameraPosition();
@@ -241,7 +241,8 @@ void loadGame(Menu *menu) {
     }
 
     std::string mapNumber;
-    std::getline(gameState, mapNumber);
+    int score;
+    gameState >> mapNumber >> score;
 
     int cameraX, cameraY;
     gameState >> cameraX >> cameraY;
@@ -270,7 +271,8 @@ void loadGame(Menu *menu) {
         player,
         new PDList<NPC, NPCS_NUMBER>(),
         new Camera(Position{cameraX, cameraY}),
-        menu->gameState
+        menu->gameState,
+        score
     );
 
     int numOfNPCs;
