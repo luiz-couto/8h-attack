@@ -17,8 +17,6 @@
 #include "Display.h"
 #include "GameImage.h"
 
-#define MAP_NUMBER "5"
-
 #define PLAYER_NAME "caz"
 #define PLAYER_START_SPEED 7
 #define PLAYER_START_HEALTH 100
@@ -47,7 +45,7 @@ class Manager {
     GameImage *gameImage;
     Player *player;
     Camera *camera;
-    std::string mapNumber = MAP_NUMBER;
+    std::string mapNumber;
     Map *map;
     PDList<NPC, NPCS_NUMBER> *npcs = new PDList<NPC, NPCS_NUMBER>();
     PDList<RigidBody, POWERUP_LIMIT> *powerUps = new PDList<RigidBody, POWERUP_LIMIT>();
@@ -71,13 +69,14 @@ class Manager {
     GamesEngineeringBase::Image *powerUpImage = new GamesEngineeringBase::Image();
 
     public:
-    Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState) {
+    Manager(GamesEngineeringBase::Window *canvas, GAME_STATE *gameState, std::string mapNumber) {
         this->canvas = canvas;
         this->gameState = gameState;
         this->display = new Display(canvas);
         this->FPSImage->load("assets/display/fps.png");
         this->powerUpImage->load("assets/powerup/powerup.png");
         this->gameImage = new GameImage(canvas);
+        this->mapNumber = mapNumber;
 
         this->player = new Player(
             canvas,

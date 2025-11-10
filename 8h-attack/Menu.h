@@ -13,11 +13,13 @@
 Position arrowFirstOption = {290, 285};
 Position arrowSecondOption = {290, 360};
 Position arrowThirdOption = {290, 430};
+Position arrowFourthOption = {290, 505};
 
-Position arrowPositions[3] = {
+Position arrowPositions[4] = {
     arrowFirstOption,
     arrowSecondOption,
-    arrowThirdOption
+    arrowThirdOption,
+    arrowFourthOption
 };
 
 class Menu;
@@ -28,9 +30,12 @@ struct MenuActions {
     MenuAction first;
     MenuAction second;
     MenuAction third;
+    MenuAction fourth;
 };
 
-void startNewGame(Menu* menu);
+void startNewGameLevel1(Menu* menu);
+void startNewGameLevel2(Menu* menu);
+void startNewGameLastMap(Menu* menu);
 void continueGame(Menu* menu);
 void loadGame(Menu* menu);
 void actionQuit(Menu* menu);
@@ -39,8 +44,9 @@ void emptyAction(Menu* menu);
 void exitToMainMenu(Menu* menu);
 
 MenuActions MainMenu = {
-    3,
-    startNewGame,
+    4,
+    startNewGameLevel1,
+    startNewGameLevel2,
     loadGame,
     actionQuit
 };
@@ -49,13 +55,15 @@ MenuActions PauseMenu = {
     2,
     continueGame,
     saveAndExitToMainMenu,
+    emptyAction,
     emptyAction
 };
 
 MenuActions GameOverMenu = {
     2,
-    startNewGame,
+    startNewGameLastMap,
     exitToMainMenu,
+    emptyAction,
     emptyAction
 };
 
@@ -91,7 +99,7 @@ class Menu {
         this->display = new Display(this->canvas);
 
         this->mainMenuImage = new GamesEngineeringBase::Image();
-        this->mainMenuImage->load("assets/menu/mainMenu.png");
+        this->mainMenuImage->load("assets/menu/mainMenu_2.png");
 
         this->pauseMenuImage = new GamesEngineeringBase::Image();
         this->pauseMenuImage->load("assets/menu/pauseMenu.png");
@@ -143,6 +151,9 @@ class Menu {
                 case 2:
                     this->menuActions->third(this);
                     break;
+                case 3:
+                    this->menuActions->fourth(this);
+                    break;
                 default:
                     break;
             }
@@ -169,8 +180,22 @@ class Menu {
     }
 };
 
-void startNewGame(Menu* menu) {
-    Manager *manager = new Manager(menu->canvas, menu->gameState);
+void startNewGameLevel1(Menu* menu) {
+    Manager *manager = new Manager(menu->canvas, menu->gameState, "5");
+    delete menu->manager;
+    menu->manager = manager;
+    *menu->gameState = GAME_STATE::IN_GAME;
+}
+
+void startNewGameLevel2(Menu* menu) {
+    Manager *manager = new Manager(menu->canvas, menu->gameState, "4");
+    delete menu->manager;
+    menu->manager = manager;
+    *menu->gameState = GAME_STATE::IN_GAME;
+}
+
+void startNewGameLastMap(Menu* menu) {
+    Manager *manager = new Manager(menu->canvas, menu->gameState, menu->manager->getMapNumber());
     delete menu->manager;
     menu->manager = manager;
     *menu->gameState = GAME_STATE::IN_GAME;

@@ -26,7 +26,7 @@ int main() {
 
     GAME_STATE gameState = GAME_STATE::MAIN_MENU;
 
-    Manager *manager = new Manager(&canvas, &gameState);
+    Manager *manager = new Manager(&canvas, &gameState, "5");
     Menu *menu = new Menu(&canvas, manager, &gameState);
 
     auto lastTime = Clock::now();
