@@ -48,7 +48,7 @@ class Vector {
         T* newarray;
         this->maxSize *= 2;
 
-        newarray = new T[maxSize]; // should check if there was enough space really
+        newarray = new T[maxSize];
         memcpy(newarray, this->arr, size * sizeof(T));
         delete[] this->arr;
         this->arr = newarray;
@@ -66,7 +66,6 @@ class Vector {
     }
 
 	T& operator[] (unsigned int index) {
-		// lazy implementation should test bounds really 
 		return this->arr[index];
 	}
 
